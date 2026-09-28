@@ -4,16 +4,19 @@
     "2026-09-29_arch_Спроектировать схему БД": "pending",
     "2026-09-29_back_Развернуть каркас FastAPI": "pending",
     "2026-09-29_front_Развернуть каркас React + Vite": "pending",
-    "2026-09-29_qa_Изучить ТЗ и контракты API": "pending"
+    "2026-09-29_qa_Изучить ТЗ и контракты API": "pending",
+    "2026-09-30_arch_Определить контракты API": "in-progress"
   },
   "notes": {
-    "2026-09-29": ""
+    "2026-09-29": "",
+    "2026-09-30": ""
   },
-  "updatedAt": "2026-09-28T18:24:52.320Z",
+  "updatedAt": "2026-09-28T18:50:00.552Z",
   "rolesFilter": {
-    "front": true,
+    "front": false,
     "arch": true,
-    "back": true,
-    "qa": true
+    "back": false,
+    "qa": false,
+    "tl": false
   }
 }
