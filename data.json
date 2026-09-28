@@ -1,11 +1,17 @@
 {
-  "taskStatus": {},
-  "notes": {},
-  "updatedAt": "2026-09-28T17:45:10.223Z",
+  "taskStatus": {
+    "2026-09-29_tl_Согласовать ТЗ с командой": "done",
+    "2026-09-29_arch_Спроектировать схему БД": "done",
+    "2026-09-29_back_Развернуть каркас FastAPI": "done"
+  },
+  "notes": {
+    "2026-09-29": ""
+  },
+  "updatedAt": "2026-09-28T17:45:31.888Z",
   "rolesFilter": {
-    "front": false,
-    "arch": false,
-    "back": false,
-    "qa": false
+    "front": true,
+    "arch": true,
+    "back": true,
+    "qa": true
   }
 }
