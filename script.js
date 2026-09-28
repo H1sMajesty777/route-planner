@@ -351,8 +351,9 @@ function renderCalendar() {
   }
 }
 
-// ===== Модальное окно =====
+// ===== Модалка =====
 let currentDate = null;
+
 function openModal(dateStr) {
   currentDate = dateStr;
   const date = new Date(dateStr + 'T00:00:00');
@@ -379,13 +380,16 @@ function openModal(dateStr) {
       const key = taskKey(t);
       const status = state.taskStatus[key] || 'pending';
       const role = ROLES[t.role];
-      const isDone = status === 'done';
+      const statusLabel = status === 'done' ? 'Выполнено'
+                        : status === 'in-progress' ? 'В разработке'
+                        : 'Не начато';
       return `
-        <div class="modal-task ${isDone ? 'done' : ''}" onclick="if(event.target.tagName !== 'INPUT') toggleTask('${key}')">
-          <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleTask('${key}')">
+        <div class="modal-task ${status}" onclick="if(event.target.tagName !== 'INPUT') toggleTask('${key}')">
+          <input type="checkbox" ${status === 'done' ? 'checked' : ''} onchange="toggleTask('${key}')">
           <div class="modal-task-content">
             <div class="modal-task-role" style="color:${role.color}">${role.name}</div>
             <div class="modal-task-text">${escapeHtml(t.text)}</div>
+            <div class="modal-task-status">${statusLabel}</div>
           </div>
         </div>
       `;
