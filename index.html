@@ -55,8 +55,8 @@
     </div>
 
     <div class="section-title">Синхронизация</div>
-    <button class="btn btn-primary" id="save-btn" onclick="saveToGitHub()">Сохранить на GitHub</button>
-    <button class="btn btn-secondary" onclick="loadFromGitHub(true)">Обновить</button>
+    <button class="btn btn-primary" id="save-btn" onclick="saveToGitHub()">💾 Сохранить на GitHub</button>
+    <button class="btn btn-secondary" onclick="loadFromGitHub(true)">🔄 Обновить</button>
 
     <div class="sync-status">
       <span class="sync-dot" id="sync-dot"></span>
@@ -69,9 +69,12 @@
 
   <main class="main">
     <div class="page-header">
-      <div>
-        <h2>Календарь разработки</h2>
-        <p class="subtitle">28 сентября 2026 — 6 декабря 2026 · 10 недель · 5 ролей</p>
+      <div class="header-with-icon">
+        <img src="ico.jpg" alt="" class="header-icon">
+        <div>
+          <h2>Календарь разработки</h2>
+          <p class="subtitle">28 сентября 2026 — 6 декабря 2026 · 10 недель · 5 ролей</p>
+        </div>
       </div>
       <div class="legend">
         <div class="legend-item"><span class="legend-dot pending"></span> Не начато</div>
@@ -116,7 +119,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal()">Закрыть</button>
-      <button class="btn btn-primary" onclick="saveNotes()">Сохранить заметку</button>
+      <button class="btn btn-primary" onclick="saveNotes()">💾 Сохранить заметку</button>
     </div>
   </div>
 </div>
@@ -124,13 +127,13 @@
 <div class="modal-overlay" id="settings-modal">
   <div class="modal">
     <div class="modal-header">
-      <h3>Настройки GitHub</h3>
+      <div>
+        <h3>Настройки GitHub</h3>
+        <div class="modal-subtitle">Токен хранится только в твоём браузере</div>
+      </div>
       <button class="modal-close" onclick="closeSettings()">×</button>
     </div>
     <div class="modal-body">
-      <p style="font-size: 13px; color: var(--gray); margin-bottom: 16px;">
-        Укажи данные репозитория и токен доступа. Токен хранится только в твоём браузере.
-      </p>
       <div class="modal-section">
         <h4>GitHub Username</h4>
         <input type="text" id="cfg-user" class="notes-area" style="min-height:auto;" placeholder="H1sMajesty777">
@@ -146,6 +149,9 @@
       <div class="modal-section">
         <h4>Personal Access Token</h4>
         <input type="password" id="cfg-token" class="notes-area" style="min-height:auto;" placeholder="ghp_...">
+        <p style="font-size: 11px; color: var(--gray); margin-top: 6px;">
+          Создать: GitHub → Settings → Developer settings → Personal access tokens (classic). Нужны права <b>repo</b>.
+        </p>
       </div>
     </div>
     <div class="modal-footer">
