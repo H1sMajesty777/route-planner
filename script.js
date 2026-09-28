@@ -36,6 +36,7 @@ const TASKS = [
   { date: '2026-10-05', role: 'back',  text: 'Настроить CI бэкенда', stage: 1 },
   { date: '2026-10-05', role: 'front', text: 'Настроить CI фронтенда', stage: 1 },
   { date: '2026-10-05', role: 'qa',    text: 'Подготовить каркас автотестов', stage: 1 },
+
   { date: '2026-10-13', role: 'back',  text: 'Реализовать регистрацию и логин', stage: 2 },
   { date: '2026-10-13', role: 'front', text: 'Сверстать страницы логина', stage: 2 },
   { date: '2026-10-13', role: 'qa',    text: 'Автотесты на регистрацию', stage: 2 },
@@ -53,6 +54,7 @@ const TASKS = [
   { date: '2026-10-17', role: 'back',  text: 'Настроить роли', stage: 2 },
   { date: '2026-10-17', role: 'front', text: 'Загрузка аватарки', stage: 2 },
   { date: '2026-10-17', role: 'qa',    text: 'Проверка прав по ролям', stage: 2 },
+
   { date: '2026-10-19', role: 'back',  text: 'POST /api/routes/build', stage: 2 },
   { date: '2026-10-19', role: 'front', text: 'Карта с точками', stage: 2 },
   { date: '2026-10-19', role: 'qa',    text: 'Автотесты на построение маршрутов', stage: 2 },
@@ -68,6 +70,7 @@ const TASKS = [
   { date: '2026-10-22', role: 'qa',    text: 'Проверка работы с тегами', stage: 2 },
   { date: '2026-10-23', role: 'back',  text: 'GET /api/tags', stage: 2 },
   { date: '2026-10-23', role: 'front', text: 'Отображение времени и дистанции', stage: 2 },
+
   { date: '2026-10-26', role: 'back',  text: 'GET /api/routes с фильтрами', stage: 2 },
   { date: '2026-10-26', role: 'front', text: 'Сверстать пул маршрутов', stage: 2 },
   { date: '2026-10-26', role: 'qa',    text: 'Автотесты на фильтры', stage: 2 },
@@ -84,6 +87,7 @@ const TASKS = [
   { date: '2026-10-30', role: 'back',  text: 'Сортировка и пагинация', stage: 2 },
   { date: '2026-10-30', role: 'front', text: 'Кнопка лайка', stage: 2 },
   { date: '2026-10-30', role: 'qa',    text: 'Проверка пагинации', stage: 2 },
+
   { date: '2026-11-02', role: 'back',  text: 'Лайки', stage: 2 },
   { date: '2026-11-02', role: 'front', text: 'Счётчик просмотров', stage: 2 },
   { date: '2026-11-02', role: 'qa',    text: 'Проверка уникальности лайков', stage: 2 },
@@ -100,6 +104,7 @@ const TASKS = [
   { date: '2026-11-09', role: 'qa',    text: 'Проверка скрытия маршрутов', stage: 2 },
   { date: '2026-11-10', role: 'back',  text: 'Скрытие маршрута админом', stage: 2 },
   { date: '2026-11-10', role: 'front', text: 'Страница пользователей', stage: 2 },
+
   { date: '2026-11-11', role: 'back',  text: 'GET /api/admin/users', stage: 2 },
   { date: '2026-11-11', role: 'front', text: 'Страница статистики', stage: 2 },
   { date: '2026-11-11', role: 'qa',    text: 'Автотесты на статистику', stage: 2 },
@@ -114,6 +119,7 @@ const TASKS = [
   { date: '2026-11-16', role: 'qa',    text: 'Проверка прав доступа', stage: 2 },
   { date: '2026-11-17', role: 'back',  text: 'Статистика просмотров', stage: 2 },
   { date: '2026-11-17', role: 'qa',    text: 'Проверка производительности', stage: 2 },
+
   { date: '2026-11-23', role: 'front', text: 'Каркас мобильного приложения', stage: 3 },
   { date: '2026-11-23', role: 'arch',  text: 'Структура React Native проекта', stage: 3 },
   { date: '2026-11-23', role: 'qa',    text: 'Расширение автотестов', stage: 3 },
@@ -207,7 +213,6 @@ function apiUrl(path) {
 
 async function loadFromGitHub(showToast = false) {
   if (!config.user || !config.repo) {
-    // fallback на localStorage
     try {
       const s = localStorage.getItem(LOCAL_KEY);
       if (s) state = { ...state, ...JSON.parse(s) };
@@ -224,7 +229,6 @@ async function loadFromGitHub(showToast = false) {
     if (config.token) headers['Authorization'] = `Bearer ${config.token}`;
     const res = await fetch(`${apiUrl('data.json')}?ref=${config.branch}`, { headers });
     if (res.status === 404) {
-      // файла нет — начинаем с пустого
       state = { taskStatus: {}, notes: {}, updatedAt: null };
       fileSha = null;
     } else if (!res.ok) {
@@ -297,7 +301,7 @@ async function saveToGitHub() {
   }
 }
 
-// ===== Рендер =====
+// ===== Рендер календаря =====
 function renderCalendar() {
   const grid = document.getElementById('days-grid');
   grid.innerHTML = '';
@@ -347,14 +351,25 @@ function renderCalendar() {
   }
 }
 
+// ===== Модальное окно =====
 let currentDate = null;
 function openModal(dateStr) {
   currentDate = dateStr;
   const date = new Date(dateStr + 'T00:00:00');
   const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-  document.getElementById('modal-title').textContent = date.toLocaleDateString('ru-RU', options);
+  const formatted = date.toLocaleDateString('ru-RU', options);
+  document.getElementById('modal-title').textContent = formatted;
+
+  const isCheckpoint = CHECKPOINTS.find(c => c.date === dateStr);
+  const subtitle = document.getElementById('modal-subtitle');
+  if (subtitle) {
+    subtitle.textContent = isCheckpoint ? '★ Контрольная точка' : '';
+  }
 
   const tasks = TASKS.filter(t => t.date === dateStr);
+  const countEl = document.getElementById('tasks-count');
+  if (countEl) countEl.textContent = tasks.length;
+
   const container = document.getElementById('modal-tasks');
 
   if (tasks.length === 0) {
@@ -366,7 +381,7 @@ function openModal(dateStr) {
       const role = ROLES[t.role];
       const isDone = status === 'done';
       return `
-        <div class="modal-task ${isDone ? 'done' : ''}">
+        <div class="modal-task ${isDone ? 'done' : ''}" onclick="if(event.target.tagName !== 'INPUT') toggleTask('${key}')">
           <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleTask('${key}')">
           <div class="modal-task-content">
             <div class="modal-task-role" style="color:${role.color}">${role.name}</div>
@@ -401,6 +416,7 @@ function saveNotes() {
   closeModal();
 }
 
+// ===== Прогресс =====
 function updateProgress() {
   const total = TASKS.length;
   const done = TASKS.filter(t => state.taskStatus[taskKey(t)] === 'done').length;

@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Route Planner — Календарь разработки</title>
+<link rel="icon" type="image/jpeg" href="ico.jpg">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -52,8 +53,8 @@
     </div>
 
     <div class="section-title">Синхронизация</div>
-    <button class="btn btn-primary" id="save-btn" onclick="saveToGitHub()">💾 Сохранить на GitHub</button>
-    <button class="btn btn-secondary" onclick="loadFromGitHub(true)">🔄 Обновить</button>
+    <button class="btn btn-primary" id="save-btn" onclick="saveToGitHub()">Сохранить на GitHub</button>
+    <button class="btn btn-secondary" onclick="loadFromGitHub(true)">Обновить</button>
 
     <div class="sync-status">
       <span class="sync-dot" id="sync-dot"></span>
@@ -95,12 +96,15 @@
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <div class="modal-header">
-      <h3 id="modal-title">Дата</h3>
+      <div>
+        <h3 id="modal-title">Дата</h3>
+        <div class="modal-subtitle" id="modal-subtitle"></div>
+      </div>
       <button class="modal-close" onclick="closeModal()">×</button>
     </div>
     <div class="modal-body">
       <div class="modal-section">
-        <h4>Задачи</h4>
+        <h4>Задачи <span class="badge" id="tasks-count">0</span></h4>
         <div id="modal-tasks"></div>
       </div>
       <div class="modal-section">

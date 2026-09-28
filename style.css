@@ -221,3 +221,173 @@ body {
   .day { min-height: 70px; padding: 6px; }
   .task-chip { font-size: 9px; }
 }
+/* ===== Улучшенная модалка ===== */
+.modal {
+  max-width: 620px;
+}
+
+.modal-header {
+  padding: 22px 26px;
+  background: linear-gradient(135deg, var(--navy), var(--navy-2));
+  color: var(--white);
+  border-bottom: none;
+}
+
+.modal-header h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.modal-subtitle {
+  font-size: 12px;
+  color: var(--gray);
+  margin-top: 4px;
+  text-transform: capitalize;
+}
+
+.modal-header .modal-close {
+  color: var(--gray);
+  font-size: 26px;
+}
+
+.modal-header .modal-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+}
+
+.modal-body {
+  padding: 24px 26px;
+}
+
+.modal-section h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 1.4px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: var(--blue);
+  color: var(--white);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* ===== Улучшенные чекбоксы ===== */
+.modal-task {
+  position: relative;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--bg);
+  border: 1px solid transparent;
+  margin-bottom: 8px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.modal-task:hover {
+  background: #eaf3ff;
+  border-color: var(--blue-light);
+  transform: translateX(2px);
+}
+
+.modal-task input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--gray-light);
+  border-radius: 6px;
+  background: var(--white);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.modal-task input[type="checkbox"]:hover {
+  border-color: var(--blue-light);
+}
+
+.modal-task input[type="checkbox"]:checked {
+  background: linear-gradient(135deg, var(--blue), var(--sky));
+  border-color: var(--blue);
+}
+
+.modal-task input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 6px;
+  height: 11px;
+  border: solid var(--white);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.modal-task.done {
+  background: #eafaf1;
+  border-color: #b8e6c8;
+}
+
+.modal-task.done .modal-task-text {
+  text-decoration: line-through;
+  color: var(--gray);
+}
+
+.modal-task.done .modal-task-role {
+  opacity: 0.6;
+}
+
+/* ===== Кнопки в модалке ===== */
+.modal-footer {
+  padding: 18px 26px;
+  background: var(--bg);
+  border-top: 1px solid var(--gray-light);
+}
+
+.modal-footer .btn {
+  padding: 10px 22px;
+  font-size: 13px;
+  border-radius: 10px;
+}
+
+/* ===== Скроллбар модалки ===== */
+.modal::-webkit-scrollbar {
+  width: 8px;
+}
+.modal::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+.modal::-webkit-scrollbar-thumb {
+  background: var(--gray-light);
+  border-radius: 4px;
+}
+.modal::-webkit-scrollbar-thumb:hover {
+  background: var(--gray);
+}
+
+/* ===== Мобильная адаптация модалки ===== */
+@media (max-width: 640px) {
+  .modal-overlay { padding: 0; }
+  .modal {
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+    height: 100vh;
+  }
+  .modal-header { border-radius: 0; }
+}
