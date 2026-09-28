@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Route Planner — Календарь разработки</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">🗺️</div>
+      <div class="logo-text">
+        <h1>Route Planner</h1>
+        <p>Календарь разработки</p>
+      </div>
+    </div>
+
+    <div class="section-title">Общий прогресс</div>
+    <div class="progress-block">
+      <h3>Проект <span id="overall-percent">0%</span></h3>
+      <div class="progress-bar">
+        <div class="progress-fill" id="overall-progress" style="width: 0%"></div>
+      </div>
+      <div class="progress-meta">
+        <span id="overall-done">0</span> / <span id="overall-total">0</span> задач
+      </div>
+    </div>
+
+    <div class="section-title">Прогресс по этапам</div>
+    <div class="progress-block">
+      <h3>Этап 1 <span id="stage1-percent">0%</span></h3>
+      <div class="progress-bar"><div class="progress-fill" id="stage1-progress"></div></div>
+    </div>
+    <div class="progress-block">
+      <h3>Этап 2 <span id="stage2-percent">0%</span></h3>
+      <div class="progress-bar"><div class="progress-fill" id="stage2-progress"></div></div>
+    </div>
+    <div class="progress-block">
+      <h3>Этап 3 <span id="stage3-percent">0%</span></h3>
+      <div class="progress-bar"><div class="progress-fill" id="stage3-progress"></div></div>
+    </div>
+
+    <div class="section-title">Фильтр по ролям</div>
+    <div class="role-filter" id="role-filter">
+      <label class="role-item"><input type="checkbox" data-role="tl" checked> <span class="role-dot tl"></span> Тимлид</label>
+      <label class="role-item"><input type="checkbox" data-role="arch" checked> <span class="role-dot arch"></span> Архитектор</label>
+      <label class="role-item"><input type="checkbox" data-role="back" checked> <span class="role-dot back"></span> Бэкенд</label>
+      <label class="role-item"><input type="checkbox" data-role="front" checked> <span class="role-dot front"></span> Фронтенд</label>
+      <label class="role-item"><input type="checkbox" data-role="qa" checked> <span class="role-dot qa"></span> Тестировщик</label>
+    </div>
+
+    <div class="section-title">Синхронизация</div>
+    <button class="btn btn-primary" id="save-btn" onclick="saveToGitHub()">💾 Сохранить на GitHub</button>
+    <button class="btn btn-secondary" onclick="loadFromGitHub(true)">🔄 Обновить</button>
+
+    <div class="sync-status">
+      <span class="sync-dot" id="sync-dot"></span>
+      <span id="sync-text">Ожидание</span>
+    </div>
+
+    <div class="section-title">Настройки</div>
+    <button class="btn btn-secondary" onclick="openSettings()">⚙️ Настроить GitHub</button>
+  </aside>
+
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <h2>Календарь разработки</h2>
+        <p class="subtitle">28 сентября 2026 — 6 декабря 2026 · 10 недель · 5 ролей</p>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><span class="legend-dot pending"></span> Не начато</div>
+        <div class="legend-item"><span class="legend-dot in-progress"></span> В разработке</div>
+        <div class="legend-item"><span class="legend-dot done"></span> Выполнено</div>
+      </div>
+    </div>
+
+    <div class="calendar">
+      <div class="weekdays">
+        <div class="weekday">Пн</div>
+        <div class="weekday">Вт</div>
+        <div class="weekday">Ср</div>
+        <div class="weekday">Чт</div>
+        <div class="weekday">Пт</div>
+        <div class="weekday">Сб</div>
+        <div class="weekday">Вс</div>
+      </div>
+      <div class="days-grid" id="days-grid"></div>
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Дата</h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <h4>Задачи</h4>
+        <div id="modal-tasks"></div>
+      </div>
+      <div class="modal-section">
+        <h4>Заметки</h4>
+        <textarea class="notes-area" id="notes-area" placeholder="Добавь заметку к этому дню..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Закрыть</button>
+      <button class="btn btn-primary" onclick="saveNotes()">Сохранить заметку</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Настройки GitHub</h3>
+      <button class="modal-close" onclick="closeSettings()">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size: 13px; color: var(--gray); margin-bottom: 16px;">
+        Укажи данные репозитория и токен доступа. Токен хранится только в твоём браузере.
+      </p>
+      <div class="modal-section">
+        <h4>GitHub Username</h4>
+        <input type="text" id="cfg-user" class="notes-area" style="min-height:auto;" placeholder="H1sMajesty777">
+      </div>
+      <div class="modal-section">
+        <h4>Название репозитория</h4>
+        <input type="text" id="cfg-repo" class="notes-area" style="min-height:auto;" placeholder="planner">
+      </div>
+      <div class="modal-section">
+        <h4>Ветка</h4>
+        <input type="text" id="cfg-branch" class="notes-area" style="min-height:auto;" placeholder="main">
+      </div>
+      <div class="modal-section">
+        <h4>Personal Access Token</h4>
+        <input type="password" id="cfg-token" class="notes-area" style="min-height:auto;" placeholder="ghp_...">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeSettings()">Отмена</button>
+      <button class="btn btn-primary" onclick="saveSettings()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
