@@ -15,20 +15,22 @@ const LOCAL_KEY = 'planner-state';
 const DEFAULT_REPO = { user: 'H1sMajesty777', repo: 'route-planner', branch: 'main' };
 const POLL_INTERVAL = 30000;
 
-// Фолбэк на случай, если data.json ещё не создан
 const FALLBACK_DATA = {
   project: {
     title: 'Route Planner — Календарь разработки',
-    subtitle: '05 октября 2026 — 06 декабря 2026 · 10 недель · 5 ролей',
+    subtitle: '05 октября 2026 — 06 декабря 2026 · 9 недель · 5 ролей',
     startDate: '2026-10-05',
     endDate: '2026-12-06'
   },
   checkpoints: [
-    { date: '2026-10-18', name: 'КТ-1: ТЗ и архитектура' },
-    { date: '2026-11-08', name: 'КТ-2: Бэкенд' },
-    { date: '2026-11-22', name: 'КТ-3: Фронтенд' },
-    { date: '2026-11-29', name: 'КТ-4: Тестирование' },
-    { date: '2026-12-05', name: 'КТ-5: Демонстрация' }
+    { date: '2026-10-05', name: 'КТ-1: ТЗ, архитектура, дизайн' },
+    { date: '2026-10-31', name: 'КТ-2: Бэкенд' },
+    { date: '2026-11-14', name: 'КТ-3: Фронтенд' },
+    { date: '2026-12-05', name: 'КТ-4: Демонстрация проекта' }
+  ],
+  saturdays: [
+    '2026-10-10', '2026-10-17', '2026-10-24', '2026-10-31',
+    '2026-11-07', '2026-11-14', '2026-11-21', '2026-11-28', '2026-12-05'
   ],
   tasks: [],
   taskStatus: {},
@@ -59,6 +61,9 @@ function getTasks() {
 }
 function getCheckpoints() {
   return (state.checkpoints && state.checkpoints.length) ? state.checkpoints : [];
+}
+function getSaturdays() {
+  return state.saturdays || [];
 }
 function getProject() {
   return state.project || FALLBACK_DATA.project;
@@ -145,7 +150,6 @@ async function loadFromGitHub(showToast = false) {
   setSync('syncing', 'Загрузка...');
   try {
     if (config.token) {
-      // Чтение через API (нужен SHA для записи)
       isReadOnly = false;
       const branch = config.branch || DEFAULT_REPO.branch;
       const headers = {
@@ -166,7 +170,6 @@ async function loadFromGitHub(showToast = false) {
         state = { ...JSON.parse(JSON.stringify(FALLBACK_DATA)), ...remote };
       }
     } else {
-      // Без токена — читаем статику с GitHub Pages, без лимитов
       isReadOnly = true;
       const res = await fetch(`${pagesDataUrl()}?t=${Date.now()}`, {
         headers: { 'Accept': 'application/json' }
@@ -352,6 +355,7 @@ function renderCalendar() {
 
   const tasks = getTasks();
   const checkpoints = getCheckpoints();
+  const saturdays = getSaturdays();
 
   while (cursor <= end) {
     const dateStr = formatDate(cursor);
@@ -363,7 +367,16 @@ function renderCalendar() {
       dayEl.innerHTML = `<div class="day-number">${cursor.getDate()}</div>`;
     } else {
       if (dateStr === formatDate(today)) dayEl.classList.add('today');
-      if (checkpoints.find(c => c.date === dateStr)) dayEl.classList.add('checkpoint');
+
+      const isCheckpoint = checkpoints.find(c => c.date === dateStr);
+      const isSaturday = saturdays.includes(dateStr);
+
+      // Приоритет: КТ (жёлтая карточка) > суббота (синяя звезда) > обычный день
+      if (isCheckpoint) {
+        dayEl.classList.add('checkpoint');
+      } else if (isSaturday) {
+        dayEl.classList.add('saturday');
+      }
 
       const roleFilter = state.rolesFilter || {};
       const dayTasks = tasks.filter(t => t.date === dateStr && roleFilter[t.role] !== false);
