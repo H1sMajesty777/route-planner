@@ -414,3 +414,113 @@ body {
   }
   .modal-header { border-radius: 0; }
 }
+/* ===== Кнопки действий в задаче ===== */
+.modal-task-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: 6px;
+  flex-shrink: 0;
+}
+
+.task-action-btn {
+  background: transparent;
+  border: 1px solid var(--gray-light);
+  color: var(--gray);
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.task-action-btn:hover {
+  background: var(--blue);
+  color: var(--white);
+  border-color: var(--blue);
+  transform: scale(1.05);
+}
+
+.task-action-btn.danger:hover {
+  background: var(--danger);
+  border-color: var(--danger);
+}
+
+/* ===== Форма редактирования ===== */
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.edit-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.edit-form-row label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--gray);
+}
+
+.edit-form-row input,
+.edit-form-row select,
+.edit-form-row textarea {
+  padding: 10px 12px;
+  border: 1px solid var(--gray-light);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--navy);
+  background: var(--white);
+  transition: all 0.2s;
+}
+
+.edit-form-row input:focus,
+.edit-form-row select:focus,
+.edit-form-row textarea:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(42, 127, 255, 0.1);
+}
+
+.edit-form-row input:disabled,
+.edit-form-row select:disabled,
+.edit-form-row textarea:disabled {
+  background: var(--bg);
+  color: var(--gray);
+  cursor: not-allowed;
+}
+
+/* ===== Кнопка "Добавить задачу" в модалке дня ===== */
+.add-task-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.add-task-btn-inline {
+  background: linear-gradient(135deg, var(--blue), var(--sky));
+  color: var(--white);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.add-task-btn-inline:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}

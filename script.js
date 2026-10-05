@@ -1,4 +1,8 @@
-// ===== Константы =====
+// ============================================================
+// КОНСТАНТЫ
+// ============================================================
+
+// Роли остаются в коде — это UI-конфиг, редактировать не будем.
 const ROLES = {
   tl:    { name: 'Тимлид',      color: '#ff6b9d' },
   arch:  { name: 'Архитектор',  color: '#f39c12' },
@@ -7,186 +11,113 @@ const ROLES = {
   qa:    { name: 'Тестировщик', color: '#a855f7' }
 };
 
-const TASKS = [
-  { date: '2026-09-29', role: 'tl',    text: 'Согласовать ТЗ с командой', stage: 1 },
-  { date: '2026-09-29', role: 'arch',  text: 'Спроектировать схему БД', stage: 1 },
-  { date: '2026-09-29', role: 'back',  text: 'Развернуть каркас FastAPI', stage: 1 },
-  { date: '2026-09-29', role: 'front', text: 'Развернуть каркас React + Vite', stage: 1 },
-  { date: '2026-09-29', role: 'qa',    text: 'Изучить ТЗ и контракты API', stage: 1 },
-  { date: '2026-09-30', role: 'tl',    text: 'Настроить GitHub, права, ветвление', stage: 1 },
-  { date: '2026-09-30', role: 'arch',  text: 'Определить контракты API', stage: 1 },
-  { date: '2026-09-30', role: 'back',  text: 'Настроить подключение к PostgreSQL', stage: 1 },
-  { date: '2026-09-30', role: 'front', text: 'Настроить структуру проекта', stage: 1 },
-  { date: '2026-09-30', role: 'qa',    text: 'Составить тест-план', stage: 1 },
-  { date: '2026-10-01', role: 'tl',    text: 'Создать доску задач', stage: 1 },
-  { date: '2026-10-01', role: 'arch',  text: 'Спроектировать архитектуру', stage: 1 },
-  { date: '2026-10-01', role: 'back',  text: 'Настроить SQLAlchemy + GeoAlchemy2', stage: 1 },
-  { date: '2026-10-01', role: 'front', text: 'Подключить Leaflet', stage: 1 },
-  { date: '2026-10-01', role: 'qa',    text: 'Определить инструменты автотестов', stage: 1 },
-  { date: '2026-10-02', role: 'tl',    text: 'Определить критерии готовности', stage: 1 },
-  { date: '2026-10-02', role: 'arch',  text: 'Подготовить Docker Compose', stage: 1 },
-  { date: '2026-10-02', role: 'back',  text: 'Подготовить Alembic', stage: 1 },
-  { date: '2026-10-02', role: 'front', text: 'Сверстать базовый layout', stage: 1 },
-  { date: '2026-10-02', role: 'qa',    text: 'Подготовить шаблоны баг-репортов', stage: 1 },
-  { date: '2026-10-03', role: 'arch',  text: 'Продумать JWT и роли', stage: 1 },
-  { date: '2026-10-03', role: 'back',  text: 'Настроить Docker для бэкенда', stage: 1 },
-  { date: '2026-10-03', role: 'front', text: 'Настроить API-клиент', stage: 1 },
-  { date: '2026-10-03', role: 'qa',    text: 'Настроить тестовое окружение', stage: 1 },
-  { date: '2026-10-05', role: 'arch',  text: 'Утвердить гео-запросы PostGIS', stage: 1 },
-  { date: '2026-10-05', role: 'back',  text: 'Настроить CI бэкенда', stage: 1 },
-  { date: '2026-10-05', role: 'front', text: 'Настроить CI фронтенда', stage: 1 },
-  { date: '2026-10-05', role: 'qa',    text: 'Подготовить каркас автотестов', stage: 1 },
-
-  { date: '2026-10-13', role: 'back',  text: 'Реализовать регистрацию и логин', stage: 2 },
-  { date: '2026-10-13', role: 'front', text: 'Сверстать страницы логина', stage: 2 },
-  { date: '2026-10-13', role: 'qa',    text: 'Автотесты на регистрацию', stage: 2 },
-  { date: '2026-10-13', role: 'arch',  text: 'Утвердить механику JWT', stage: 2 },
-  { date: '2026-10-14', role: 'tl',    text: 'Согласовать политику безопасности', stage: 2 },
-  { date: '2026-10-14', role: 'arch',  text: 'Rate limiting на Nginx', stage: 2 },
-  { date: '2026-10-14', role: 'back',  text: 'Выдача и обновление JWT', stage: 2 },
-  { date: '2026-10-14', role: 'front', text: 'Хранение токенов', stage: 2 },
-  { date: '2026-10-15', role: 'back',  text: 'Logout с blacklist в Redis', stage: 2 },
-  { date: '2026-10-15', role: 'front', text: 'Автообновление access-токена', stage: 2 },
-  { date: '2026-10-15', role: 'qa',    text: 'Проверка валидации данных', stage: 2 },
-  { date: '2026-10-16', role: 'back',  text: 'GET /api/auth/me', stage: 2 },
-  { date: '2026-10-16', role: 'front', text: 'Сверстать личный кабинет', stage: 2 },
-  { date: '2026-10-16', role: 'qa',    text: 'Проверка истечения токенов', stage: 2 },
-  { date: '2026-10-17', role: 'back',  text: 'Настроить роли', stage: 2 },
-  { date: '2026-10-17', role: 'front', text: 'Загрузка аватарки', stage: 2 },
-  { date: '2026-10-17', role: 'qa',    text: 'Проверка прав по ролям', stage: 2 },
-
-  { date: '2026-10-19', role: 'back',  text: 'POST /api/routes/build', stage: 2 },
-  { date: '2026-10-19', role: 'front', text: 'Карта с точками', stage: 2 },
-  { date: '2026-10-19', role: 'qa',    text: 'Автотесты на построение маршрутов', stage: 2 },
-  { date: '2026-10-19', role: 'arch',  text: 'Формат хранения waypoints', stage: 2 },
-  { date: '2026-10-20', role: 'back',  text: 'POST /api/routes', stage: 2 },
-  { date: '2026-10-20', role: 'front', text: 'Отправка точек на бэкенд', stage: 2 },
-  { date: '2026-10-20', role: 'arch',  text: 'Контракт с OSRM', stage: 2 },
-  { date: '2026-10-21', role: 'back',  text: 'CRUD маршрутов', stage: 2 },
-  { date: '2026-10-21', role: 'front', text: 'Отображение маршрута', stage: 2 },
-  { date: '2026-10-21', role: 'qa',    text: 'Проверка граничных случаев', stage: 2 },
-  { date: '2026-10-22', role: 'back',  text: 'Привязка тегов', stage: 2 },
-  { date: '2026-10-22', role: 'front', text: 'Форма создания маршрута', stage: 2 },
-  { date: '2026-10-22', role: 'qa',    text: 'Проверка работы с тегами', stage: 2 },
-  { date: '2026-10-23', role: 'back',  text: 'GET /api/tags', stage: 2 },
-  { date: '2026-10-23', role: 'front', text: 'Отображение времени и дистанции', stage: 2 },
-
-  { date: '2026-10-26', role: 'back',  text: 'GET /api/routes с фильтрами', stage: 2 },
-  { date: '2026-10-26', role: 'front', text: 'Сверстать пул маршрутов', stage: 2 },
-  { date: '2026-10-26', role: 'qa',    text: 'Автотесты на фильтры', stage: 2 },
-  { date: '2026-10-26', role: 'arch',  text: 'Гео-запросы через PostGIS', stage: 2 },
-  { date: '2026-10-27', role: 'back',  text: 'Радиус-поиск ST_DWithin', stage: 2 },
-  { date: '2026-10-27', role: 'front', text: 'Фильтры (радиус, время, теги)', stage: 2 },
-  { date: '2026-10-27', role: 'qa',    text: 'Проверка радиус-поиска', stage: 2 },
-  { date: '2026-10-28', role: 'back',  text: 'Фильтр по времени', stage: 2 },
-  { date: '2026-10-28', role: 'front', text: 'Отображение маршрутов на карте', stage: 2 },
-  { date: '2026-10-28', role: 'qa',    text: 'Проверка фильтров в комбинации', stage: 2 },
-  { date: '2026-10-29', role: 'back',  text: 'Фильтр по тегам', stage: 2 },
-  { date: '2026-10-29', role: 'front', text: 'Карточка маршрута', stage: 2 },
-  { date: '2026-10-29', role: 'arch',  text: 'Индексы GIST', stage: 2 },
-  { date: '2026-10-30', role: 'back',  text: 'Сортировка и пагинация', stage: 2 },
-  { date: '2026-10-30', role: 'front', text: 'Кнопка лайка', stage: 2 },
-  { date: '2026-10-30', role: 'qa',    text: 'Проверка пагинации', stage: 2 },
-
-  { date: '2026-11-02', role: 'back',  text: 'Лайки', stage: 2 },
-  { date: '2026-11-02', role: 'front', text: 'Счётчик просмотров', stage: 2 },
-  { date: '2026-11-02', role: 'qa',    text: 'Проверка уникальности лайков', stage: 2 },
-  { date: '2026-11-03', role: 'back',  text: 'Счётчик просмотров через Redis', stage: 2 },
-  { date: '2026-11-03', role: 'front', text: 'Форма жалобы', stage: 2 },
-  { date: '2026-11-03', role: 'qa',    text: 'Проверка счётчика просмотров', stage: 2 },
-  { date: '2026-11-05', role: 'back',  text: 'Создание жалобы', stage: 2 },
-  { date: '2026-11-05', role: 'front', text: 'Страница жалоб для менеджера', stage: 2 },
-  { date: '2026-11-05', role: 'qa',    text: 'Проверка создания жалоб', stage: 2 },
-  { date: '2026-11-05', role: 'arch',  text: 'Логика скрытия маршрутов', stage: 2 },
-  { date: '2026-11-06', role: 'back',  text: 'Список жалоб', stage: 2 },
-  { date: '2026-11-06', role: 'qa',    text: 'Проверка обработки жалоб', stage: 2 },
-  { date: '2026-11-09', role: 'back',  text: 'Смена статуса жалобы', stage: 2 },
-  { date: '2026-11-09', role: 'qa',    text: 'Проверка скрытия маршрутов', stage: 2 },
-  { date: '2026-11-10', role: 'back',  text: 'Скрытие маршрута админом', stage: 2 },
-  { date: '2026-11-10', role: 'front', text: 'Страница пользователей', stage: 2 },
-
-  { date: '2026-11-11', role: 'back',  text: 'GET /api/admin/users', stage: 2 },
-  { date: '2026-11-11', role: 'front', text: 'Страница статистики', stage: 2 },
-  { date: '2026-11-11', role: 'qa',    text: 'Автотесты на статистику', stage: 2 },
-  { date: '2026-11-12', role: 'back',  text: 'PUT /api/admin/users/{id}', stage: 2 },
-  { date: '2026-11-12', role: 'front', text: 'Управление ролями', stage: 2 },
-  { date: '2026-11-12', role: 'qa',    text: 'Проверка статистики', stage: 2 },
-  { date: '2026-11-13', role: 'back',  text: 'GET /api/admin/stats', stage: 2 },
-  { date: '2026-11-13', role: 'front', text: 'Фильтры по периодам', stage: 2 },
-  { date: '2026-11-13', role: 'qa',    text: 'Проверка управления пользователями', stage: 2 },
-  { date: '2026-11-16', role: 'back',  text: 'Статистика пользователей', stage: 2 },
-  { date: '2026-11-16', role: 'front', text: 'Графики', stage: 2 },
-  { date: '2026-11-16', role: 'qa',    text: 'Проверка прав доступа', stage: 2 },
-  { date: '2026-11-17', role: 'back',  text: 'Статистика просмотров', stage: 2 },
-  { date: '2026-11-17', role: 'qa',    text: 'Проверка производительности', stage: 2 },
-
-  { date: '2026-11-23', role: 'front', text: 'Каркас мобильного приложения', stage: 3 },
-  { date: '2026-11-23', role: 'arch',  text: 'Структура React Native проекта', stage: 3 },
-  { date: '2026-11-23', role: 'qa',    text: 'Расширение автотестов', stage: 3 },
-  { date: '2026-11-23', role: 'tl',    text: 'Согласование дизайна экранов', stage: 3 },
-  { date: '2026-11-24', role: 'front', text: 'Экраны аутентификации', stage: 3 },
-  { date: '2026-11-24', role: 'back',  text: 'Доработка API под мобильное', stage: 3 },
-  { date: '2026-11-24', role: 'arch',  text: 'JWT на мобильном', stage: 3 },
-  { date: '2026-11-25', role: 'front', text: 'Карта с геолокацией', stage: 3 },
-  { date: '2026-11-25', role: 'qa',    text: 'Проверка мобильного на iOS/Android', stage: 3 },
-  { date: '2026-11-26', role: 'front', text: 'Создание маршрута на мобильном', stage: 3 },
-  { date: '2026-11-26', role: 'back',  text: 'Оптимизация эндпоинтов', stage: 3 },
-  { date: '2026-11-27', role: 'front', text: 'Пул маршрутов на мобильном', stage: 3 },
-  { date: '2026-11-27', role: 'qa',    text: 'Проверка геолокации', stage: 3 },
-  { date: '2026-11-30', role: 'front', text: 'Исправление багов интерфейса', stage: 3 },
-  { date: '2026-11-30', role: 'qa',    text: 'Проверка работы с картой', stage: 3 },
-  { date: '2026-11-30', role: 'tl',    text: 'Финальное ревью', stage: 3 },
-  { date: '2026-12-01', role: 'front', text: 'Production-сборка', stage: 3 },
-  { date: '2026-12-01', role: 'qa',    text: 'Проверка создания маршрутов', stage: 3 },
-  { date: '2026-12-02', role: 'qa',    text: 'Регрессионное тестирование', stage: 3 },
-  { date: '2026-12-02', role: 'arch',  text: 'Проверка безопасности', stage: 3 },
-  { date: '2026-12-03', role: 'qa',    text: 'Проверка всех сценариев ролей', stage: 3 },
-  { date: '2026-12-03', role: 'tl',    text: 'Подготовка релиза', stage: 3 },
-  { date: '2026-12-04', role: 'qa',    text: 'Финальный отчёт', stage: 3 },
-  { date: '2026-12-04', role: 'arch',  text: 'Финальная проверка Docker и Nginx', stage: 3 },
-];
-
-const CHECKPOINTS = [
-  { date: '2026-10-03' }, { date: '2026-10-10' }, { date: '2026-10-17' },
-  { date: '2026-10-24' }, { date: '2026-10-31' }, { date: '2026-11-07' },
-  { date: '2026-11-14' }, { date: '2026-11-21' }, { date: '2026-11-28' },
-  { date: '2026-12-05' },
-];
-
 const CFG_KEY = 'planner-github-config';
 const LOCAL_KEY = 'planner-state';
+const DEFAULT_REPO = { user: 'H1sMajesty777', repo: 'route-planner', branch: 'main' };
+const POLL_INTERVAL = 30000; // 30 секунд — автообновление
 
-let state = { taskStatus: {}, notes: {}, updatedAt: null };
+// Фолбэк-шаблон на случай, если data.json ещё не создан
+const FALLBACK_DATA = {
+  project: {
+    title: 'Route Planner — Календарь разработки',
+    subtitle: '05 октября 2026 — 06 декабря 2026 · 10 недель · 5 ролей',
+    startDate: '2026-10-05',
+    endDate: '2026-12-06'
+  },
+  checkpoints: [
+    { date: '2026-10-18', name: 'КТ-1: ТЗ и архитектура' },
+    { date: '2026-11-08', name: 'КТ-2: Бэкенд' },
+    { date: '2026-11-22', name: 'КТ-3: Фронтенд' },
+    { date: '2026-11-29', name: 'КТ-4: Тестирование' },
+    { date: '2026-12-05', name: 'КТ-5: Демонстрация' }
+  ],
+  tasks: [],
+  taskStatus: {},
+  notes: {},
+  rolesFilter: { tl: true, arch: true, back: true, front: true, qa: true },
+  updatedAt: null
+};
+
+// ============================================================
+// СОСТОЯНИЕ
+// ============================================================
+
+let state = JSON.parse(JSON.stringify(FALLBACK_DATA));
 let config = { user: '', repo: '', branch: 'main', token: '' };
 let fileSha = null;
 let isSaving = false;
+let isReadOnly = false;
+let pollTimer = null;
+let lastKnownUpdatedAt = null;
 
-// ===== Утилиты =====
-function taskKey(t) { return `${t.date}_${t.role}_${t.text}`; }
+// ============================================================
+// УТИЛИТЫ
+// ============================================================
+
+function getTasks() {
+  return (state.tasks && state.tasks.length) ? state.tasks : [];
+}
+
+function getCheckpoints() {
+  return (state.checkpoints && state.checkpoints.length) ? state.checkpoints : [];
+}
+
+function getProject() {
+  return state.project || FALLBACK_DATA.project;
+}
+
+function taskKey(t) {
+  return `${t.date}_${t.role}_${t.text}`;
+}
+
 function escapeHtml(s) {
   const div = document.createElement('div');
   div.textContent = s;
   return div.innerHTML;
 }
+
 function formatDate(d) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return `${y}-${m}-${day}`;
 }
-function setSync(cls, text) {
-  document.getElementById('sync-dot').className = 'sync-dot ' + cls;
-  document.getElementById('sync-text').textContent = text;
+
+function parseDate(str) {
+  return new Date(str + 'T00:00:00');
 }
 
-// ===== Настройки =====
+function setSync(cls, text) {
+  const dot = document.getElementById('sync-dot');
+  const txt = document.getElementById('sync-text');
+  if (dot) dot.className = 'sync-dot ' + cls;
+  if (txt) txt.textContent = text;
+}
+
+function applyProjectMeta() {
+  const p = getProject();
+  const subtitle = document.querySelector('.page-header .subtitle');
+  if (subtitle) subtitle.textContent = p.subtitle;
+
+  // Динамически пересчитываем границы календаря
+  window.__projectStart = p.startDate;
+  window.__projectEnd = p.endDate;
+}
+
+// ============================================================
+// НАСТРОЙКИ
+// ============================================================
+
 function loadConfig() {
   try {
     const s = localStorage.getItem(CFG_KEY);
     if (s) config = { ...config, ...JSON.parse(s) };
   } catch (e) {}
 }
-function saveConfig() { localStorage.setItem(CFG_KEY, JSON.stringify(config)); }
+
+function saveConfig() {
+  localStorage.setItem(CFG_KEY, JSON.stringify(config));
+}
 
 function openSettings() {
   document.getElementById('cfg-user').value = config.user;
@@ -195,7 +126,11 @@ function openSettings() {
   document.getElementById('cfg-token').value = config.token;
   document.getElementById('settings-modal').classList.add('active');
 }
-function closeSettings() { document.getElementById('settings-modal').classList.remove('active'); }
+
+function closeSettings() {
+  document.getElementById('settings-modal').classList.remove('active');
+}
+
 function saveSettings() {
   config.user = document.getElementById('cfg-user').value.trim();
   config.repo = document.getElementById('cfg-repo').value.trim();
@@ -206,30 +141,34 @@ function saveSettings() {
   loadFromGitHub();
 }
 
-// ===== GitHub API =====
+// ============================================================
+// GITHUB API
+// ============================================================
+
 function apiUrl(path) {
-  return `https://api.github.com/repos/${config.user}/${config.repo}/contents/${path}`;
+  const user = config.user || DEFAULT_REPO.user;
+  const repo = config.repo || DEFAULT_REPO.repo;
+  return `https://api.github.com/repos/${user}/${repo}/contents/${path}`;
 }
 
 async function loadFromGitHub(showToast = false) {
-  if (!config.user || !config.repo) {
-    try {
-      const s = localStorage.getItem(LOCAL_KEY);
-      if (s) state = { ...state, ...JSON.parse(s) };
-    } catch (e) {}
-    renderCalendar();
-    updateProgress();
-    setSync('', 'Локальный режим');
-    return;
-  }
+  const branch = config.branch || DEFAULT_REPO.branch;
 
   setSync('syncing', 'Загрузка...');
   try {
     const headers = { 'Accept': 'application/vnd.github+json' };
-    if (config.token) headers['Authorization'] = `Bearer ${config.token}`;
-    const res = await fetch(`${apiUrl('data.json')}?ref=${config.branch}`, { headers });
+    if (config.token) {
+      headers['Authorization'] = `Bearer ${config.token}`;
+      isReadOnly = false;
+    } else {
+      isReadOnly = true;
+    }
+
+    const res = await fetch(`${apiUrl('data.json')}?ref=${branch}&t=${Date.now()}`, { headers });
+
     if (res.status === 404) {
-      state = { taskStatus: {}, notes: {}, updatedAt: null };
+      // Файла нет — используем фолбэк, не перезаписываем
+      state = JSON.parse(JSON.stringify(FALLBACK_DATA));
       fileSha = null;
     } else if (!res.ok) {
       throw new Error(`HTTP ${res.status}`);
@@ -237,11 +176,17 @@ async function loadFromGitHub(showToast = false) {
       const data = await res.json();
       fileSha = data.sha;
       const decoded = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
-      state = { ...state, ...JSON.parse(decoded) };
+      const remote = JSON.parse(decoded);
+      // Мерджим с фолбэком, чтобы не потерять поля, если их нет в удалённом
+      state = { ...JSON.parse(JSON.stringify(FALLBACK_DATA)), ...remote };
     }
+
+    lastKnownUpdatedAt = state.updatedAt;
+    applyProjectMeta();
     renderCalendar();
     updateProgress();
-    setSync('', 'Синхронизировано');
+    updateReadOnlyUI();
+    setSync('', isReadOnly ? 'Режим просмотра' : 'Синхронизировано');
     if (showToast) console.log('Обновлено');
   } catch (e) {
     console.error(e);
@@ -250,25 +195,31 @@ async function loadFromGitHub(showToast = false) {
 }
 
 async function saveToGitHub() {
+  if (isReadOnly) {
+    alert('Режим просмотра. Введи токен в настройках, чтобы сохранять изменения.');
+    return;
+  }
   if (isSaving) return;
-  if (!config.user || !config.repo || !config.token) {
+  if (!config.token) {
     alert('Настрой GitHub в разделе «Настроить GitHub»');
     openSettings();
     return;
   }
 
   isSaving = true;
-  document.getElementById('save-btn').disabled = true;
+  const saveBtn = document.getElementById('save-btn');
+  if (saveBtn) saveBtn.disabled = true;
   setSync('syncing', 'Сохранение...');
 
   try {
     state.updatedAt = new Date().toISOString();
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(state, null, 2))));
 
+    const branch = config.branch || DEFAULT_REPO.branch;
     const body = {
       message: `Обновление календаря — ${new Date().toLocaleString('ru-RU')}`,
       content: content,
-      branch: config.branch
+      branch: branch
     };
     if (fileSha) body.sha = fileSha;
 
@@ -282,6 +233,13 @@ async function saveToGitHub() {
       body: JSON.stringify(body)
     });
 
+    if (res.status === 409) {
+      // Конфликт — кто-то сохранил раньше
+      alert('Кто-то изменил данные раньше тебя. Сейчас подтянем свежую версию.');
+      await loadFromGitHub();
+      return;
+    }
+
     if (!res.ok) {
       const err = await res.text();
       throw new Error(`HTTP ${res.status}: ${err}`);
@@ -289,6 +247,7 @@ async function saveToGitHub() {
 
     const result = await res.json();
     fileSha = result.content.sha;
+    lastKnownUpdatedAt = state.updatedAt;
     setSync('', 'Сохранено ✓');
     setTimeout(() => setSync('', 'Синхронизировано'), 2000);
   } catch (e) {
@@ -297,22 +256,92 @@ async function saveToGitHub() {
     alert('Не удалось сохранить: ' + e.message);
   } finally {
     isSaving = false;
-    document.getElementById('save-btn').disabled = false;
+    if (saveBtn) saveBtn.disabled = false;
   }
 }
 
-// ===== Рендер календаря =====
+// ============================================================
+// READ-ONLY РЕЖИМ
+// ============================================================
+
+function updateReadOnlyUI() {
+  const saveBtn = document.getElementById('save-btn');
+  const settingsBtn = document.getElementById('settings-btn');
+  const addBtn = document.getElementById('add-task-btn');
+
+  if (isReadOnly) {
+    if (saveBtn) {
+      saveBtn.disabled = true;
+      saveBtn.textContent = '🔒 Только просмотр';
+    }
+    if (settingsBtn) settingsBtn.style.display = 'none';
+    if (addBtn) addBtn.style.display = 'none';
+  } else {
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.textContent = '💾 Сохранить на GitHub';
+    }
+    if (settingsBtn) settingsBtn.style.display = '';
+    if (addBtn) addBtn.style.display = '';
+  }
+}
+
+// ============================================================
+// АВТООБНОВЛЕНИЕ (POLLING)
+// ============================================================
+
+function startPolling() {
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(async () => {
+    if (isSaving) return;
+    const branch = config.branch || DEFAULT_REPO.branch;
+    try {
+      const headers = { 'Accept': 'application/vnd.github+json' };
+      if (config.token) headers['Authorization'] = `Bearer ${config.token}`;
+      const res = await fetch(`${apiUrl('data.json')}?ref=${branch}&t=${Date.now()}`, { headers });
+      if (!res.ok) return;
+      const data = await res.json();
+      const decoded = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+      const remote = JSON.parse(decoded);
+      if (remote.updatedAt && remote.updatedAt !== lastKnownUpdatedAt) {
+        // Кто-то сохранил изменения — обновляем
+        fileSha = data.sha;
+        state = { ...JSON.parse(JSON.stringify(FALLBACK_DATA)), ...remote };
+        lastKnownUpdatedAt = remote.updatedAt;
+        applyProjectMeta();
+        renderCalendar();
+        updateProgress();
+        if (currentDate) openModal(currentDate);
+      }
+    } catch (e) {
+      // тихо игнорируем
+    }
+  }, POLL_INTERVAL);
+}
+
+// ============================================================
+// РЕНДЕР КАЛЕНДАРЯ
+// ============================================================
+
 function renderCalendar() {
   const grid = document.getElementById('days-grid');
+  if (!grid) return;
   grid.innerHTML = '';
-  const start = new Date(2026, 8, 28);
-  const end = new Date(2026, 11, 6);
+
+  const project = getProject();
+  const start = parseDate(project.startDate);
+  const end = parseDate(project.endDate);
+
   const startDay = start.getDay();
   const offset = startDay === 0 ? 6 : startDay - 1;
   const cursor = new Date(start);
   cursor.setDate(cursor.getDate() - offset);
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+
+  const tasks = getTasks();
+  const checkpoints = getCheckpoints();
 
   while (cursor <= end) {
     const dateStr = formatDate(cursor);
@@ -324,15 +353,16 @@ function renderCalendar() {
       dayEl.innerHTML = `<div class="day-number">${cursor.getDate()}</div>`;
     } else {
       if (dateStr === formatDate(today)) dayEl.classList.add('today');
-      if (CHECKPOINTS.find(c => c.date === dateStr)) dayEl.classList.add('checkpoint');
+      if (checkpoints.find(c => c.date === dateStr)) dayEl.classList.add('checkpoint');
 
       const roleFilter = state.rolesFilter || {};
-      const dayTasks = TASKS.filter(t => t.date === dateStr && roleFilter[t.role] !== false);
+      const dayTasks = tasks.filter(t => t.date === dateStr && roleFilter[t.role] !== false);
+
       const tasksHtml = dayTasks.slice(0, 4).map(t => {
         const key = taskKey(t);
         const status = state.taskStatus[key] || 'pending';
-        const role = ROLES[t.role];
-        return `<div class="task-chip ${status}" title="${role.name}: ${t.text}">
+        const role = ROLES[t.role] || { name: '—', color: '#999' };
+        return `<div class="task-chip ${status}" title="${escapeHtml(role.name)}: ${escapeHtml(t.text)}">
           <span class="dot" style="background:${role.color}"></span>
           ${escapeHtml(t.text.substring(0, 20))}${t.text.length > 20 ? '…' : ''}
         </div>`;
@@ -351,23 +381,102 @@ function renderCalendar() {
   }
 }
 
-// ===== Модалка =====
+// ============================================================
+// ПРОГРЕСС
+// ============================================================
+
+function updateProgress() {
+  const tasks = getTasks();
+  const total = tasks.length;
+  const done = tasks.filter(t => state.taskStatus[taskKey(t)] === 'done').length;
+  const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+
+  document.getElementById('overall-percent').textContent = percent + '%';
+  document.getElementById('overall-progress').style.width = percent + '%';
+  document.getElementById('overall-done').textContent = done;
+  document.getElementById('overall-total').textContent = total;
+
+  [1, 2, 3, 4, 5].forEach(stage => {
+    const el = document.getElementById(`stage${stage}-percent`);
+    const bar = document.getElementById(`stage${stage}-progress`);
+    if (!el || !bar) return;
+    const st = tasks.filter(t => t.stage === stage);
+    const sd = st.filter(t => state.taskStatus[taskKey(t)] === 'done').length;
+    const p = st.length ? Math.round((sd / st.length) * 100) : 0;
+    el.textContent = p + '%';
+    bar.style.width = p + '%';
+  });
+}
+
+// ============================================================
+// СОБЫТИЯ (фильтр ролей, закрытие модалок)
+// ============================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+  const roleFilter = document.getElementById('role-filter');
+  if (roleFilter) {
+    roleFilter.addEventListener('change', (e) => {
+      if (e.target.type === 'checkbox') {
+        if (!state.rolesFilter) state.rolesFilter = {};
+        state.rolesFilter[e.target.dataset.role] = e.target.checked;
+        renderCalendar();
+      }
+    });
+  }
+
+  const modal = document.getElementById('modal');
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target.id === 'modal') closeModal();
+    });
+  }
+
+  const settings = document.getElementById('settings-modal');
+  if (settings) {
+    settings.addEventListener('click', (e) => {
+      if (e.target.id === 'settings-modal') closeSettings();
+    });
+  }
+
+  const editModal = document.getElementById('edit-modal');
+  if (editModal) {
+    editModal.addEventListener('click', (e) => {
+      if (e.target.id === 'edit-modal') closeEditModal();
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeModal();
+      closeSettings();
+      closeEditModal();
+    }
+  });
+
+  // Инициализация
+  loadConfig();
+  loadFromGitHub().then(() => {
+    startPolling();
+  });
+});
+// ============================================================
+// МОДАЛКА ДНЯ
+// ============================================================
+
 let currentDate = null;
 
 function openModal(dateStr) {
   currentDate = dateStr;
-  const date = new Date(dateStr + 'T00:00:00');
+  const date = parseDate(dateStr);
   const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
   const formatted = date.toLocaleDateString('ru-RU', options);
   document.getElementById('modal-title').textContent = formatted;
 
-  const isCheckpoint = CHECKPOINTS.find(c => c.date === dateStr);
+  const cp = getCheckpoints().find(c => c.date === dateStr);
   const subtitle = document.getElementById('modal-subtitle');
-  if (subtitle) {
-    subtitle.textContent = isCheckpoint ? '★ Контрольная точка' : '';
-  }
+  if (subtitle) subtitle.textContent = cp ? '★ ' + cp.name : '';
 
-  const tasks = TASKS.filter(t => t.date === dateStr);
+  const tasks = getTasks().filter(t => t.date === dateStr);
   const countEl = document.getElementById('tasks-count');
   if (countEl) countEl.textContent = tasks.length;
 
@@ -379,18 +488,25 @@ function openModal(dateStr) {
     container.innerHTML = tasks.map(t => {
       const key = taskKey(t);
       const status = state.taskStatus[key] || 'pending';
-      const role = ROLES[t.role];
+      const role = ROLES[t.role] || { name: '—', color: '#999' };
       const statusLabel = status === 'done' ? 'Выполнено'
                         : status === 'in-progress' ? 'В разработке'
                         : 'Не начато';
+
+      const editBtns = isReadOnly ? '' : `
+        <button class="task-action-btn" onclick="event.stopPropagation(); editTask('${encodeURIComponent(key)}')" title="Редактировать">✎</button>
+        <button class="task-action-btn danger" onclick="event.stopPropagation(); deleteTask('${encodeURIComponent(key)}')" title="Удалить">🗑</button>
+      `;
+
       return `
-        <div class="modal-task ${status}" onclick="if(event.target.tagName !== 'INPUT') toggleTask('${key}')">
-          <input type="checkbox" ${status === 'done' ? 'checked' : ''} onchange="toggleTask('${key}')">
-          <div class="modal-task-content">
-            <div class="modal-task-role" style="color:${role.color}">${role.name}</div>
+        <div class="modal-task ${status}">
+          <input type="checkbox" ${status === 'done' ? 'checked' : ''} onchange="toggleTask('${encodeURIComponent(key)}')">
+          <div class="modal-task-content" onclick="toggleTask('${encodeURIComponent(key)}')">
+            <div class="modal-task-role" style="color:${role.color}">${escapeHtml(role.name)}</div>
             <div class="modal-task-text">${escapeHtml(t.text)}</div>
             <div class="modal-task-status">${statusLabel}</div>
           </div>
+          <div class="modal-task-actions">${editBtns}</div>
         </div>
       `;
     }).join('');
@@ -405,7 +521,12 @@ function closeModal() {
   currentDate = null;
 }
 
-function toggleTask(key) {
+function toggleTask(encodedKey) {
+  if (isReadOnly) {
+    alert('Режим просмотра. Изменения недоступны.');
+    return;
+  }
+  const key = decodeURIComponent(encodedKey);
   const cur = state.taskStatus[key] || 'pending';
   const next = cur === 'pending' ? 'in-progress' : cur === 'in-progress' ? 'done' : 'pending';
   state.taskStatus[key] = next;
@@ -415,53 +536,152 @@ function toggleTask(key) {
 }
 
 function saveNotes() {
+  if (isReadOnly) {
+    alert('Режим просмотра. Изменения недоступны.');
+    return;
+  }
   if (!currentDate) return;
   state.notes[currentDate] = document.getElementById('notes-area').value;
   closeModal();
+  setSync('', 'Не забудь сохранить');
 }
 
-// ===== Прогресс =====
-function updateProgress() {
-  const total = TASKS.length;
-  const done = TASKS.filter(t => state.taskStatus[taskKey(t)] === 'done').length;
-  const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+// ============================================================
+// РЕДАКТИРОВАНИЕ ЗАДАЧ
+// ============================================================
 
-  document.getElementById('overall-percent').textContent = percent + '%';
-  document.getElementById('overall-progress').style.width = percent + '%';
-  document.getElementById('overall-done').textContent = done;
-  document.getElementById('overall-total').textContent = total;
-
-  [1, 2, 3].forEach(stage => {
-    const st = TASKS.filter(t => t.stage === stage);
-    const sd = st.filter(t => state.taskStatus[taskKey(t)] === 'done').length;
-    const p = st.length ? Math.round((sd / st.length) * 100) : 0;
-    document.getElementById(`stage${stage}-percent`).textContent = p + '%';
-    document.getElementById(`stage${stage}-progress`).style.width = p + '%';
-  });
-}
-
-// ===== События =====
-document.getElementById('role-filter').addEventListener('change', (e) => {
-  if (e.target.type === 'checkbox') {
-    if (!state.rolesFilter) state.rolesFilter = {};
-    state.rolesFilter[e.target.dataset.role] = e.target.checked;
-    renderCalendar();
+function editTask(encodedKey) {
+  if (isReadOnly) {
+    alert('Режим просмотра. Изменения недоступны.');
+    return;
   }
-});
+  const key = decodeURIComponent(encodedKey);
+  const tasks = getTasks();
+  const task = tasks.find(t => taskKey(t) === key);
+  if (!task) {
+    alert('Задача не найдена');
+    return;
+  }
 
-document.getElementById('modal').addEventListener('click', (e) => {
-  if (e.target.id === 'modal') closeModal();
-});
-document.getElementById('settings-modal').addEventListener('click', (e) => {
-  if (e.target.id === 'settings-modal') closeSettings();
-});
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') { closeModal(); closeSettings(); }
-});
+  // Заполняем форму
+  document.getElementById('edit-modal-title').textContent = 'Редактирование задачи';
+  document.getElementById('edit-original-key').value = key;
+  document.getElementById('edit-text').value = task.text;
+  document.getElementById('edit-date').value = task.date;
+  document.getElementById('edit-role').value = task.role;
+  document.getElementById('edit-stage').value = task.stage || 1;
 
-// ===== Инициализация =====
-loadConfig();
-loadFromGitHub().then(() => {
+  document.getElementById('edit-modal').classList.add('active');
+}
+
+function addTask(dateStr) {
+  if (isReadOnly) {
+    alert('Режим просмотра. Изменения недоступны.');
+    return;
+  }
+  document.getElementById('edit-modal-title').textContent = 'Новая задача';
+  document.getElementById('edit-original-key').value = '';
+  document.getElementById('edit-text').value = '';
+  document.getElementById('edit-date').value = dateStr || currentDate || formatDate(new Date());
+  document.getElementById('edit-role').value = 'tl';
+  document.getElementById('edit-stage').value = 1;
+
+  document.getElementById('edit-modal').classList.add('active');
+}
+
+function closeEditModal() {
+  document.getElementById('edit-modal').classList.remove('active');
+}
+
+function saveTaskForm() {
+  if (isReadOnly) {
+    alert('Режим просмотра. Изменения недоступны.');
+    return;
+  }
+
+  const originalKey = document.getElementById('edit-original-key').value;
+  const text = document.getElementById('edit-text').value.trim();
+  const date = document.getElementById('edit-date').value;
+  const role = document.getElementById('edit-role').value;
+  const stage = parseInt(document.getElementById('edit-stage').value, 10);
+
+  if (!text) {
+    alert('Введите текст задачи');
+    return;
+  }
+  if (!date) {
+    alert('Выберите дату');
+    return;
+  }
+  if (!role) {
+    alert('Выберите роль');
+    return;
+  }
+
+  if (!state.tasks) state.tasks = getTasks().slice();
+
+  if (originalKey) {
+    // Редактирование существующей
+    const idx = state.tasks.findIndex(t => taskKey(t) === originalKey);
+    if (idx === -1) {
+      alert('Задача не найдена');
+      return;
+    }
+    const oldKey = originalKey;
+    state.tasks[idx] = { date, role, text, stage };
+    const newKey = taskKey(state.tasks[idx]);
+
+    // Переносим статус на новый ключ
+    if (oldKey !== newKey && state.taskStatus[oldKey]) {
+      state.taskStatus[newKey] = state.taskStatus[oldKey];
+      delete state.taskStatus[oldKey];
+    }
+  } else {
+    // Новая задача
+    state.tasks.push({ date, role, text, stage });
+  }
+
+  // Сортируем задачи по дате
+  state.tasks.sort((a, b) => a.date.localeCompare(b.date));
+
+  closeEditModal();
   renderCalendar();
   updateProgress();
+  if (currentDate) openModal(currentDate);
+  setSync('', 'Не забудь сохранить');
+}
+
+function deleteTask(encodedKey) {
+  if (isReadOnly) {
+    alert('Режим просмотра. Изменения недоступны.');
+    return;
+  }
+  const key = decodeURIComponent(encodedKey);
+  if (!confirm('Удалить задачу?')) return;
+
+  if (!state.tasks) state.tasks = getTasks().slice();
+  state.tasks = state.tasks.filter(t => taskKey(t) !== key);
+  delete state.taskStatus[key];
+
+  renderCalendar();
+  updateProgress();
+  if (currentDate) openModal(currentDate);
+  setSync('', 'Не забудь сохранить');
+}
+
+// ============================================================
+// ЗАГРУЗКА UI ПОСЛЕ ПОЛУЧЕНИЯ ДАННЫХ
+// ============================================================
+
+// После инициализации в части 1 — навешиваем обработчики на кнопки
+document.addEventListener('DOMContentLoaded', () => {
+  const addTaskBtn = document.getElementById('add-task-btn');
+  if (addTaskBtn) {
+    addTaskBtn.addEventListener('click', () => addTask(currentDate));
+  }
+
+  const editSaveBtn = document.getElementById('edit-save-btn');
+  if (editSaveBtn) {
+    editSaveBtn.addEventListener('click', saveTaskForm);
+  }
 });

@@ -44,6 +44,14 @@
       <h3>Этап 3 <span id="stage3-percent">0%</span></h3>
       <div class="progress-bar"><div class="progress-fill" id="stage3-progress"></div></div>
     </div>
+    <div class="progress-block">
+      <h3>Этап 4 <span id="stage4-percent">0%</span></h3>
+      <div class="progress-bar"><div class="progress-fill" id="stage4-progress"></div></div>
+    </div>
+    <div class="progress-block">
+      <h3>Этап 5 <span id="stage5-percent">0%</span></h3>
+      <div class="progress-bar"><div class="progress-fill" id="stage5-progress"></div></div>
+    </div>
 
     <div class="section-title">Фильтр по ролям</div>
     <div class="role-filter" id="role-filter">
@@ -55,8 +63,8 @@
     </div>
 
     <div class="section-title">Синхронизация</div>
-    <button class="btn btn-primary" id="save-btn" onclick="saveToGitHub()">Сохранить на GitHub</button>
-    <button class="btn btn-secondary" onclick="loadFromGitHub(true)">Обновить</button>
+    <button class="btn btn-primary" id="save-btn" onclick="saveToGitHub()">💾 Сохранить на GitHub</button>
+    <button class="btn btn-secondary" onclick="loadFromGitHub(true)">🔄 Обновить</button>
 
     <div class="sync-status">
       <span class="sync-dot" id="sync-dot"></span>
@@ -64,7 +72,7 @@
     </div>
 
     <div class="section-title">Настройки</div>
-    <button class="btn btn-secondary" onclick="openSettings()">⚙️ Настроить GitHub</button>
+    <button class="btn btn-secondary" id="settings-btn" onclick="openSettings()">⚙️ Настроить GitHub</button>
   </aside>
 
   <main class="main">
@@ -73,7 +81,7 @@
         <img src="Frame 3.png" alt="" class="header-icon">
         <div>
           <h2>Календарь разработки</h2>
-          <p class="subtitle">28 сентября 2026 — 6 декабря 2026 · 10 недель · 5 ролей</p>
+          <p class="subtitle">05 октября 2026 — 06 декабря 2026 · 10 недель · 5 ролей</p>
         </div>
       </div>
       <div class="legend">
@@ -98,6 +106,7 @@
   </main>
 </div>
 
+<!-- Модалка дня -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <div class="modal-header">
@@ -109,7 +118,10 @@
     </div>
     <div class="modal-body">
       <div class="modal-section">
-        <h4>Задачи <span class="badge" id="tasks-count">0</span></h4>
+        <div class="section-head-row">
+          <h4>Задачи <span class="badge" id="tasks-count">0</span></h4>
+          <button class="add-task-btn-inline" id="add-task-btn" onclick="addTask()">+ Добавить задачу</button>
+        </div>
         <div id="modal-tasks"></div>
       </div>
       <div class="modal-section">
@@ -119,11 +131,66 @@
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal()">Закрыть</button>
-      <button class="btn btn-primary" onclick="saveNotes()">Сохранить заметку</button>
+      <button class="btn btn-primary" onclick="saveNotes()">💾 Сохранить заметку</button>
     </div>
   </div>
 </div>
 
+<!-- Модалка редактирования задачи -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h3 id="edit-modal-title">Редактирование задачи</h3>
+        <div class="modal-subtitle">Изменения сохранятся после нажатия «Сохранить на GitHub»</div>
+      </div>
+      <button class="modal-close" onclick="closeEditModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="edit-form">
+        <input type="hidden" id="edit-original-key" value="">
+
+        <div class="edit-form-row">
+          <label>Текст задачи</label>
+          <textarea id="edit-text" rows="3" placeholder="Что нужно сделать"></textarea>
+        </div>
+
+        <div class="edit-form-row">
+          <label>Дата</label>
+          <input type="date" id="edit-date">
+        </div>
+
+        <div class="edit-form-row">
+          <label>Роль</label>
+          <select id="edit-role">
+            <option value="tl">Тимлид</option>
+            <option value="arch">Архитектор</option>
+            <option value="back">Бэкенд</option>
+            <option value="front">Фронтенд</option>
+            <option value="qa">Тестировщик</option>
+          </select>
+        </div>
+
+        <div class="edit-form-row">
+          <label>Этап</label>
+          <select id="edit-stage">
+            <option value="1">Этап 1 — ТЗ и архитектура</option>
+            <option value="2">Этап 2 — Бэкенд</option>
+            <option value="3">Этап 3 — Фронтенд</option>
+            <option value="4">Этап 4 — Тестирование</option>
+            <option value="5">Этап 5 — Демонстрация</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeEditModal()">Отмена</button>
+      <button class="btn btn-primary" id="edit-save-btn">Сохранить задачу</button>
+    </div>
+  </div>
+</div>
+
+<!-- Модалка настроек GitHub -->
 <div class="modal-overlay" id="settings-modal">
   <div class="modal">
     <div class="modal-header">
@@ -140,7 +207,7 @@
       </div>
       <div class="modal-section">
         <h4>Название репозитория</h4>
-        <input type="text" id="cfg-repo" class="notes-area" style="min-height:auto;" placeholder="planner">
+        <input type="text" id="cfg-repo" class="notes-area" style="min-height:auto;" placeholder="route-planner">
       </div>
       <div class="modal-section">
         <h4>Ветка</h4>
