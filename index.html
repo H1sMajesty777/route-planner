@@ -62,9 +62,10 @@
       <label class="role-item"><input type="checkbox" data-role="qa" checked> <span class="role-dot qa"></span> Тестировщик</label>
     </div>
 
-    <div class="section-title">Синхронизация</div>
+    <div class="section-title">Действия</div>
     <button class="btn btn-primary" id="save-btn" onclick="saveToGitHub()">💾 Сохранить на GitHub</button>
     <button class="btn btn-secondary" onclick="loadFromGitHub(true)">🔄 Обновить</button>
+    <button class="btn btn-secondary" id="dates-btn" onclick="openDatesModal()">📅 Управление датами</button>
 
     <div class="sync-status">
       <span class="sync-dot" id="sync-dot"></span>
@@ -88,6 +89,8 @@
         <div class="legend-item"><span class="legend-dot pending"></span> Не начато</div>
         <div class="legend-item"><span class="legend-dot in-progress"></span> В разработке</div>
         <div class="legend-item"><span class="legend-dot done"></span> Выполнено</div>
+        <div class="legend-item"><span class="legend-dot saturday"></span> Суббота</div>
+        <div class="legend-item"><span class="legend-dot checkpoint"></span> КТ</div>
       </div>
     </div>
 
@@ -186,6 +189,43 @@
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeEditModal()">Отмена</button>
       <button class="btn btn-primary" id="edit-save-btn">Сохранить задачу</button>
+    </div>
+  </div>
+</div>
+
+<!-- Модалка управления датами -->
+<div class="modal-overlay" id="dates-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h3>Управление датами</h3>
+        <div class="modal-subtitle">Субботы — синие, КТ — жёлтые</div>
+      </div>
+      <button class="modal-close" onclick="closeDatesModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <h4>Субботы (день пуша)</h4>
+        <div id="saturdays-list" class="dates-list"></div>
+        <div class="date-form">
+          <input type="date" id="new-saturday-date">
+          <button class="btn btn-primary" onclick="addSaturday()">Добавить</button>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h4>Контрольные точки (сдача этапа)</h4>
+        <div id="checkpoints-list" class="dates-list"></div>
+        <div class="date-form">
+          <input type="date" id="new-checkpoint-date">
+          <input type="text" id="new-checkpoint-name" placeholder="Название КТ">
+          <button class="btn btn-primary" onclick="addCheckpoint()">Добавить</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeDatesModal()">Закрыть</button>
+      <button class="btn btn-primary" onclick="saveToGitHub()">💾 Сохранить на GitHub</button>
     </div>
   </div>
 </div>

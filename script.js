@@ -29,8 +29,8 @@ const FALLBACK_DATA = {
     { date: '2026-12-05', name: 'КТ-4: Демонстрация проекта' }
   ],
   saturdays: [
-    '2026-10-10', '2026-10-17', '2026-10-24', '2026-10-31',
-    '2026-11-07', '2026-11-14', '2026-11-21', '2026-11-28', '2026-12-05'
+    '2026-10-10', '2026-10-17', '2026-10-24',
+    '2026-11-07', '2026-11-21', '2026-11-28'
   ],
   tasks: [],
   taskStatus: {},
@@ -270,6 +270,7 @@ function updateReadOnlyUI() {
   const saveBtn = document.getElementById('save-btn');
   const settingsBtn = document.getElementById('settings-btn');
   const addBtn = document.getElementById('add-task-btn');
+  const datesBtn = document.getElementById('dates-btn');
 
   if (isReadOnly) {
     if (saveBtn) {
@@ -278,6 +279,7 @@ function updateReadOnlyUI() {
     }
     if (settingsBtn) settingsBtn.style.display = 'none';
     if (addBtn) addBtn.style.display = 'none';
+    if (datesBtn) datesBtn.style.display = 'none';
   } else {
     if (saveBtn) {
       saveBtn.disabled = false;
@@ -285,6 +287,7 @@ function updateReadOnlyUI() {
     }
     if (settingsBtn) settingsBtn.style.display = '';
     if (addBtn) addBtn.style.display = '';
+    if (datesBtn) datesBtn.style.display = '';
   }
 }
 
@@ -371,7 +374,6 @@ function renderCalendar() {
       const isCheckpoint = checkpoints.find(c => c.date === dateStr);
       const isSaturday = saturdays.includes(dateStr);
 
-      // Приоритет: КТ (жёлтая карточка) > суббота (синяя звезда) > обычный день
       if (isCheckpoint) {
         dayEl.classList.add('checkpoint');
       } else if (isSaturday) {
@@ -589,6 +591,122 @@ function deleteTask(encodedKey) {
 }
 
 // ============================================================
+// УПРАВЛЕНИЕ ДАТАМИ (СУББОТЫ И КТ)
+// ============================================================
+
+function openDatesModal() {
+  if (isReadOnly) {
+    alert('Режим просмотра. Изменения недоступны.');
+    return;
+  }
+  renderDatesModal();
+  document.getElementById('dates-modal').classList.add('active');
+}
+
+function closeDatesModal() {
+  document.getElementById('dates-modal').classList.remove('active');
+}
+
+function renderDatesModal() {
+  const saturdays = getSaturdays();
+  const checkpoints = getCheckpoints();
+
+  // Субботы
+  const satContainer = document.getElementById('saturdays-list');
+  if (saturdays.length === 0) {
+    satContainer.innerHTML = '<div class="dates-empty">Нет суббот</div>';
+  } else {
+    satContainer.innerHTML = saturdays.slice().sort().map(d => `
+      <div class="date-row">
+        <span class="date-label blue">★ ${d}</span>
+        <button class="date-remove" onclick="removeSaturday('${d}')" title="Удалить">×</button>
+      </div>
+    `).join('');
+  }
+
+  // КТ
+  const cpContainer = document.getElementById('checkpoints-list');
+  if (checkpoints.length === 0) {
+    cpContainer.innerHTML = '<div class="dates-empty">Нет контрольных точек</div>';
+  } else {
+    cpContainer.innerHTML = checkpoints.slice().sort((a, b) => a.date.localeCompare(b.date)).map(c => `
+      <div class="date-row">
+        <span class="date-label yellow">★ ${c.date} — ${escapeHtml(c.name)}</span>
+        <button class="date-remove" onclick="removeCheckpoint('${c.date}')" title="Удалить">×</button>
+      </div>
+    `).join('');
+  }
+}
+
+function addSaturday() {
+  if (isReadOnly) return;
+  const input = document.getElementById('new-saturday-date');
+  const date = input.value;
+  if (!date) {
+    alert('Выберите дату');
+    return;
+  }
+  if (!state.saturdays) state.saturdays = [];
+  if (state.saturdays.includes(date)) {
+    alert('Эта дата уже отмечена как суббота');
+    return;
+  }
+  state.saturdays.push(date);
+  state.saturdays.sort();
+  input.value = '';
+  renderDatesModal();
+  renderCalendar();
+  setSync('', 'Не забудь сохранить');
+}
+
+function removeSaturday(date) {
+  if (isReadOnly) return;
+  if (!state.saturdays) return;
+  state.saturdays = state.saturdays.filter(d => d !== date);
+  renderDatesModal();
+  renderCalendar();
+  setSync('', 'Не забудь сохранить');
+}
+
+function addCheckpoint() {
+  if (isReadOnly) return;
+  const dateInput = document.getElementById('new-checkpoint-date');
+  const nameInput = document.getElementById('new-checkpoint-name');
+  const date = dateInput.value;
+  const name = nameInput.value.trim();
+
+  if (!date) {
+    alert('Выберите дату');
+    return;
+  }
+  if (!name) {
+    alert('Введите название КТ');
+    return;
+  }
+  if (!state.checkpoints) state.checkpoints = [];
+  if (state.checkpoints.find(c => c.date === date)) {
+    alert('На эту дату уже есть КТ');
+    return;
+  }
+  state.checkpoints.push({ date, name });
+  state.checkpoints.sort((a, b) => a.date.localeCompare(b.date));
+  dateInput.value = '';
+  nameInput.value = '';
+  renderDatesModal();
+  renderCalendar();
+  setSync('', 'Не забудь сохранить');
+}
+
+function removeCheckpoint(date) {
+  if (isReadOnly) return;
+  if (!state.checkpoints) return;
+  state.checkpoints = state.checkpoints.filter(c => c.date !== date);
+  renderDatesModal();
+  renderCalendar();
+  setSync('', 'Не забудь сохранить');
+}
+
+// ============================================================
 // ПРОГРЕСС
 // ============================================================
 
@@ -652,6 +770,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const datesModal = document.getElementById('dates-modal');
+  if (datesModal) {
+    datesModal.addEventListener('click', (e) => {
+      if (e.target.id === 'dates-modal') closeDatesModal();
+    });
+  }
+
   const addTaskBtn = document.getElementById('add-task-btn');
   if (addTaskBtn) {
     addTaskBtn.addEventListener('click', () => addTask(currentDate));
@@ -667,6 +792,7 @@ document.addEventListener('DOMContentLoaded', () => {
       closeModal();
       closeSettings();
       closeEditModal();
+      closeDatesModal();
     }
   });
 
