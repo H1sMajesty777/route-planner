@@ -2,7 +2,6 @@
 // КОНСТАНТЫ
 // ============================================================
 
-// Роли остаются в коде — это UI-конфиг, редактировать не будем.
 const ROLES = {
   tl:    { name: 'Тимлид',      color: '#ff6b9d' },
   arch:  { name: 'Архитектор',  color: '#f39c12' },
@@ -14,9 +13,9 @@ const ROLES = {
 const CFG_KEY = 'planner-github-config';
 const LOCAL_KEY = 'planner-state';
 const DEFAULT_REPO = { user: 'H1sMajesty777', repo: 'route-planner', branch: 'main' };
-const POLL_INTERVAL = 30000; // 30 секунд — автообновление
+const POLL_INTERVAL = 30000;
 
-// Фолбэк-шаблон на случай, если data.json ещё не создан
+// Фолбэк на случай, если data.json ещё не создан
 const FALLBACK_DATA = {
   project: {
     title: 'Route Planner — Календарь разработки',
@@ -49,6 +48,7 @@ let isSaving = false;
 let isReadOnly = false;
 let pollTimer = null;
 let lastKnownUpdatedAt = null;
+let currentDate = null;
 
 // ============================================================
 // УТИЛИТЫ
@@ -57,51 +57,39 @@ let lastKnownUpdatedAt = null;
 function getTasks() {
   return (state.tasks && state.tasks.length) ? state.tasks : [];
 }
-
 function getCheckpoints() {
   return (state.checkpoints && state.checkpoints.length) ? state.checkpoints : [];
 }
-
 function getProject() {
   return state.project || FALLBACK_DATA.project;
 }
-
 function taskKey(t) {
   return `${t.date}_${t.role}_${t.text}`;
 }
-
 function escapeHtml(s) {
   const div = document.createElement('div');
   div.textContent = s;
   return div.innerHTML;
 }
-
 function formatDate(d) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return `${y}-${m}-${day}`;
 }
-
 function parseDate(str) {
   return new Date(str + 'T00:00:00');
 }
-
 function setSync(cls, text) {
   const dot = document.getElementById('sync-dot');
   const txt = document.getElementById('sync-text');
   if (dot) dot.className = 'sync-dot ' + cls;
   if (txt) txt.textContent = text;
 }
-
 function applyProjectMeta() {
   const p = getProject();
   const subtitle = document.querySelector('.page-header .subtitle');
   if (subtitle) subtitle.textContent = p.subtitle;
-
-  // Динамически пересчитываем границы календаря
-  window.__projectStart = p.startDate;
-  window.__projectEnd = p.endDate;
 }
 
 // ============================================================
@@ -114,11 +102,9 @@ function loadConfig() {
     if (s) config = { ...config, ...JSON.parse(s) };
   } catch (e) {}
 }
-
 function saveConfig() {
   localStorage.setItem(CFG_KEY, JSON.stringify(config));
 }
-
 function openSettings() {
   document.getElementById('cfg-user').value = config.user;
   document.getElementById('cfg-repo').value = config.repo;
@@ -126,11 +112,9 @@ function openSettings() {
   document.getElementById('cfg-token').value = config.token;
   document.getElementById('settings-modal').classList.add('active');
 }
-
 function closeSettings() {
   document.getElementById('settings-modal').classList.remove('active');
 }
-
 function saveSettings() {
   config.user = document.getElementById('cfg-user').value.trim();
   config.repo = document.getElementById('cfg-repo').value.trim();
@@ -142,7 +126,7 @@ function saveSettings() {
 }
 
 // ============================================================
-// GITHUB API
+// GITHUB API / PAGES
 // ============================================================
 
 function apiUrl(path) {
@@ -151,34 +135,51 @@ function apiUrl(path) {
   return `https://api.github.com/repos/${user}/${repo}/contents/${path}`;
 }
 
-async function loadFromGitHub(showToast = false) {
-  const branch = config.branch || DEFAULT_REPO.branch;
+function pagesDataUrl() {
+  const user = config.user || DEFAULT_REPO.user;
+  const repo = config.repo || DEFAULT_REPO.repo;
+  return `https://${user.toLowerCase()}.github.io/${repo}/data.json`;
+}
 
+async function loadFromGitHub(showToast = false) {
   setSync('syncing', 'Загрузка...');
   try {
-    const headers = { 'Accept': 'application/vnd.github+json' };
     if (config.token) {
-      headers['Authorization'] = `Bearer ${config.token}`;
+      // Чтение через API (нужен SHA для записи)
       isReadOnly = false;
+      const branch = config.branch || DEFAULT_REPO.branch;
+      const headers = {
+        'Accept': 'application/vnd.github+json',
+        'Authorization': `Bearer ${config.token}`
+      };
+      const res = await fetch(`${apiUrl('data.json')}?ref=${branch}&t=${Date.now()}`, { headers });
+      if (res.status === 404) {
+        state = JSON.parse(JSON.stringify(FALLBACK_DATA));
+        fileSha = null;
+      } else if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      } else {
+        const data = await res.json();
+        fileSha = data.sha;
+        const decoded = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+        const remote = JSON.parse(decoded);
+        state = { ...JSON.parse(JSON.stringify(FALLBACK_DATA)), ...remote };
+      }
     } else {
+      // Без токена — читаем статику с GitHub Pages, без лимитов
       isReadOnly = true;
-    }
-
-    const res = await fetch(`${apiUrl('data.json')}?ref=${branch}&t=${Date.now()}`, { headers });
-
-    if (res.status === 404) {
-      // Файла нет — используем фолбэк, не перезаписываем
-      state = JSON.parse(JSON.stringify(FALLBACK_DATA));
+      const res = await fetch(`${pagesDataUrl()}?t=${Date.now()}`, {
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.status === 404) {
+        state = JSON.parse(JSON.stringify(FALLBACK_DATA));
+      } else if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      } else {
+        const remote = await res.json();
+        state = { ...JSON.parse(JSON.stringify(FALLBACK_DATA)), ...remote };
+      }
       fileSha = null;
-    } else if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`);
-    } else {
-      const data = await res.json();
-      fileSha = data.sha;
-      const decoded = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
-      const remote = JSON.parse(decoded);
-      // Мерджим с фолбэком, чтобы не потерять поля, если их нет в удалённом
-      state = { ...JSON.parse(JSON.stringify(FALLBACK_DATA)), ...remote };
     }
 
     lastKnownUpdatedAt = state.updatedAt;
@@ -214,8 +215,8 @@ async function saveToGitHub() {
   try {
     state.updatedAt = new Date().toISOString();
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(state, null, 2))));
-
     const branch = config.branch || DEFAULT_REPO.branch;
+
     const body = {
       message: `Обновление календаря — ${new Date().toLocaleString('ru-RU')}`,
       content: content,
@@ -234,12 +235,10 @@ async function saveToGitHub() {
     });
 
     if (res.status === 409) {
-      // Конфликт — кто-то сохранил раньше
       alert('Кто-то изменил данные раньше тебя. Сейчас подтянем свежую версию.');
       await loadFromGitHub();
       return;
     }
-
     if (!res.ok) {
       const err = await res.text();
       throw new Error(`HTTP ${res.status}: ${err}`);
@@ -261,7 +260,7 @@ async function saveToGitHub() {
 }
 
 // ============================================================
-// READ-ONLY РЕЖИМ
+// READ-ONLY
 // ============================================================
 
 function updateReadOnlyUI() {
@@ -287,25 +286,39 @@ function updateReadOnlyUI() {
 }
 
 // ============================================================
-// АВТООБНОВЛЕНИЕ (POLLING)
+// АВТООБНОВЛЕНИЕ
 // ============================================================
 
 function startPolling() {
   if (pollTimer) clearInterval(pollTimer);
   pollTimer = setInterval(async () => {
     if (isSaving) return;
-    const branch = config.branch || DEFAULT_REPO.branch;
     try {
-      const headers = { 'Accept': 'application/vnd.github+json' };
-      if (config.token) headers['Authorization'] = `Bearer ${config.token}`;
-      const res = await fetch(`${apiUrl('data.json')}?ref=${branch}&t=${Date.now()}`, { headers });
-      if (!res.ok) return;
-      const data = await res.json();
-      const decoded = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
-      const remote = JSON.parse(decoded);
+      let remote;
+      let newSha = null;
+
+      if (config.token) {
+        const branch = config.branch || DEFAULT_REPO.branch;
+        const headers = {
+          'Accept': 'application/vnd.github+json',
+          'Authorization': `Bearer ${config.token}`
+        };
+        const res = await fetch(`${apiUrl('data.json')}?ref=${branch}&t=${Date.now()}`, { headers });
+        if (!res.ok) return;
+        const data = await res.json();
+        newSha = data.sha;
+        const decoded = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+        remote = JSON.parse(decoded);
+      } else {
+        const res = await fetch(`${pagesDataUrl()}?t=${Date.now()}`, {
+          headers: { 'Accept': 'application/json' }
+        });
+        if (!res.ok) return;
+        remote = await res.json();
+      }
+
       if (remote.updatedAt && remote.updatedAt !== lastKnownUpdatedAt) {
-        // Кто-то сохранил изменения — обновляем
-        fileSha = data.sha;
+        fileSha = newSha;
         state = { ...JSON.parse(JSON.stringify(FALLBACK_DATA)), ...remote };
         lastKnownUpdatedAt = remote.updatedAt;
         applyProjectMeta();
@@ -313,9 +326,7 @@ function startPolling() {
         updateProgress();
         if (currentDate) openModal(currentDate);
       }
-    } catch (e) {
-      // тихо игнорируем
-    }
+    } catch (e) {}
   }, POLL_INTERVAL);
 }
 
@@ -336,7 +347,6 @@ function renderCalendar() {
   const offset = startDay === 0 ? 6 : startDay - 1;
   const cursor = new Date(start);
   cursor.setDate(cursor.getDate() - offset);
-
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -382,88 +392,8 @@ function renderCalendar() {
 }
 
 // ============================================================
-// ПРОГРЕСС
-// ============================================================
-
-function updateProgress() {
-  const tasks = getTasks();
-  const total = tasks.length;
-  const done = tasks.filter(t => state.taskStatus[taskKey(t)] === 'done').length;
-  const percent = total > 0 ? Math.round((done / total) * 100) : 0;
-
-  document.getElementById('overall-percent').textContent = percent + '%';
-  document.getElementById('overall-progress').style.width = percent + '%';
-  document.getElementById('overall-done').textContent = done;
-  document.getElementById('overall-total').textContent = total;
-
-  [1, 2, 3, 4, 5].forEach(stage => {
-    const el = document.getElementById(`stage${stage}-percent`);
-    const bar = document.getElementById(`stage${stage}-progress`);
-    if (!el || !bar) return;
-    const st = tasks.filter(t => t.stage === stage);
-    const sd = st.filter(t => state.taskStatus[taskKey(t)] === 'done').length;
-    const p = st.length ? Math.round((sd / st.length) * 100) : 0;
-    el.textContent = p + '%';
-    bar.style.width = p + '%';
-  });
-}
-
-// ============================================================
-// СОБЫТИЯ (фильтр ролей, закрытие модалок)
-// ============================================================
-
-document.addEventListener('DOMContentLoaded', () => {
-  const roleFilter = document.getElementById('role-filter');
-  if (roleFilter) {
-    roleFilter.addEventListener('change', (e) => {
-      if (e.target.type === 'checkbox') {
-        if (!state.rolesFilter) state.rolesFilter = {};
-        state.rolesFilter[e.target.dataset.role] = e.target.checked;
-        renderCalendar();
-      }
-    });
-  }
-
-  const modal = document.getElementById('modal');
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target.id === 'modal') closeModal();
-    });
-  }
-
-  const settings = document.getElementById('settings-modal');
-  if (settings) {
-    settings.addEventListener('click', (e) => {
-      if (e.target.id === 'settings-modal') closeSettings();
-    });
-  }
-
-  const editModal = document.getElementById('edit-modal');
-  if (editModal) {
-    editModal.addEventListener('click', (e) => {
-      if (e.target.id === 'edit-modal') closeEditModal();
-    });
-  }
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      closeModal();
-      closeSettings();
-      closeEditModal();
-    }
-  });
-
-  // Инициализация
-  loadConfig();
-  loadFromGitHub().then(() => {
-    startPolling();
-  });
-});
-// ============================================================
 // МОДАЛКА ДНЯ
 // ============================================================
-
-let currentDate = null;
 
 function openModal(dateStr) {
   currentDate = dateStr;
@@ -533,6 +463,7 @@ function toggleTask(encodedKey) {
   renderCalendar();
   updateProgress();
   if (currentDate) openModal(currentDate);
+  setSync('', 'Не забудь сохранить');
 }
 
 function saveNotes() {
@@ -562,15 +493,12 @@ function editTask(encodedKey) {
     alert('Задача не найдена');
     return;
   }
-
-  // Заполняем форму
   document.getElementById('edit-modal-title').textContent = 'Редактирование задачи';
   document.getElementById('edit-original-key').value = key;
   document.getElementById('edit-text').value = task.text;
   document.getElementById('edit-date').value = task.date;
   document.getElementById('edit-role').value = task.role;
   document.getElementById('edit-stage').value = task.stage || 1;
-
   document.getElementById('edit-modal').classList.add('active');
 }
 
@@ -585,7 +513,6 @@ function addTask(dateStr) {
   document.getElementById('edit-date').value = dateStr || currentDate || formatDate(new Date());
   document.getElementById('edit-role').value = 'tl';
   document.getElementById('edit-stage').value = 1;
-
   document.getElementById('edit-modal').classList.add('active');
 }
 
@@ -598,52 +525,33 @@ function saveTaskForm() {
     alert('Режим просмотра. Изменения недоступны.');
     return;
   }
-
   const originalKey = document.getElementById('edit-original-key').value;
   const text = document.getElementById('edit-text').value.trim();
   const date = document.getElementById('edit-date').value;
   const role = document.getElementById('edit-role').value;
   const stage = parseInt(document.getElementById('edit-stage').value, 10);
 
-  if (!text) {
-    alert('Введите текст задачи');
-    return;
-  }
-  if (!date) {
-    alert('Выберите дату');
-    return;
-  }
-  if (!role) {
-    alert('Выберите роль');
-    return;
-  }
+  if (!text) { alert('Введите текст задачи'); return; }
+  if (!date) { alert('Выберите дату'); return; }
+  if (!role) { alert('Выберите роль'); return; }
 
   if (!state.tasks) state.tasks = getTasks().slice();
 
   if (originalKey) {
-    // Редактирование существующей
     const idx = state.tasks.findIndex(t => taskKey(t) === originalKey);
-    if (idx === -1) {
-      alert('Задача не найдена');
-      return;
-    }
+    if (idx === -1) { alert('Задача не найдена'); return; }
     const oldKey = originalKey;
     state.tasks[idx] = { date, role, text, stage };
     const newKey = taskKey(state.tasks[idx]);
-
-    // Переносим статус на новый ключ
     if (oldKey !== newKey && state.taskStatus[oldKey]) {
       state.taskStatus[newKey] = state.taskStatus[oldKey];
       delete state.taskStatus[oldKey];
     }
   } else {
-    // Новая задача
     state.tasks.push({ date, role, text, stage });
   }
 
-  // Сортируем задачи по дате
   state.tasks.sort((a, b) => a.date.localeCompare(b.date));
-
   closeEditModal();
   renderCalendar();
   updateProgress();
@@ -658,11 +566,9 @@ function deleteTask(encodedKey) {
   }
   const key = decodeURIComponent(encodedKey);
   if (!confirm('Удалить задачу?')) return;
-
   if (!state.tasks) state.tasks = getTasks().slice();
   state.tasks = state.tasks.filter(t => taskKey(t) !== key);
   delete state.taskStatus[key];
-
   renderCalendar();
   updateProgress();
   if (currentDate) openModal(currentDate);
@@ -670,11 +576,69 @@ function deleteTask(encodedKey) {
 }
 
 // ============================================================
-// ЗАГРУЗКА UI ПОСЛЕ ПОЛУЧЕНИЯ ДАННЫХ
+// ПРОГРЕСС
 // ============================================================
 
-// После инициализации в части 1 — навешиваем обработчики на кнопки
+function updateProgress() {
+  const tasks = getTasks();
+  const total = tasks.length;
+  const done = tasks.filter(t => state.taskStatus[taskKey(t)] === 'done').length;
+  const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+
+  document.getElementById('overall-percent').textContent = percent + '%';
+  document.getElementById('overall-progress').style.width = percent + '%';
+  document.getElementById('overall-done').textContent = done;
+  document.getElementById('overall-total').textContent = total;
+
+  [1, 2, 3, 4, 5].forEach(stage => {
+    const el = document.getElementById(`stage${stage}-percent`);
+    const bar = document.getElementById(`stage${stage}-progress`);
+    if (!el || !bar) return;
+    const st = tasks.filter(t => t.stage === stage);
+    const sd = st.filter(t => state.taskStatus[taskKey(t)] === 'done').length;
+    const p = st.length ? Math.round((sd / st.length) * 100) : 0;
+    el.textContent = p + '%';
+    bar.style.width = p + '%';
+  });
+}
+
+// ============================================================
+// СОБЫТИЯ И ИНИЦИАЛИЗАЦИЯ
+// ============================================================
+
 document.addEventListener('DOMContentLoaded', () => {
+  const roleFilter = document.getElementById('role-filter');
+  if (roleFilter) {
+    roleFilter.addEventListener('change', (e) => {
+      if (e.target.type === 'checkbox') {
+        if (!state.rolesFilter) state.rolesFilter = {};
+        state.rolesFilter[e.target.dataset.role] = e.target.checked;
+        renderCalendar();
+      }
+    });
+  }
+
+  const modal = document.getElementById('modal');
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target.id === 'modal') closeModal();
+    });
+  }
+
+  const settings = document.getElementById('settings-modal');
+  if (settings) {
+    settings.addEventListener('click', (e) => {
+      if (e.target.id === 'settings-modal') closeSettings();
+    });
+  }
+
+  const editModal = document.getElementById('edit-modal');
+  if (editModal) {
+    editModal.addEventListener('click', (e) => {
+      if (e.target.id === 'edit-modal') closeEditModal();
+    });
+  }
+
   const addTaskBtn = document.getElementById('add-task-btn');
   if (addTaskBtn) {
     addTaskBtn.addEventListener('click', () => addTask(currentDate));
@@ -684,4 +648,17 @@ document.addEventListener('DOMContentLoaded', () => {
   if (editSaveBtn) {
     editSaveBtn.addEventListener('click', saveTaskForm);
   }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeModal();
+      closeSettings();
+      closeEditModal();
+    }
+  });
+
+  loadConfig();
+  loadFromGitHub().then(() => {
+    startPolling();
+  });
 });
