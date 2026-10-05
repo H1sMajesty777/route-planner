@@ -166,11 +166,19 @@ body {
 .day.empty { background: transparent; cursor: default; }
 .day.empty:hover { transform: none; border-color: transparent; }
 .day.today { border-color: var(--blue); background: #eaf3ff; }
+
+/* Контрольные точки — жёлтая звезда */
 .day.checkpoint { background: linear-gradient(135deg, #eaf3ff, #d8e8ff); }
 .day.checkpoint::before {
-  content: '★'; position: absolute; top: 6px; right: 8px;
-  color: var(--blue); font-size: 14px;
+  content: '★';
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  color: #f5b301;
+  font-size: 18px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
+
 .day-number {
   font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px;
 }
@@ -330,7 +338,6 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* Статус: Не начато */
 .modal-task.pending {
   background: var(--bg);
   border-color: transparent;
@@ -340,7 +347,6 @@ body {
   color: var(--navy);
 }
 
-/* Статус: В разработке */
 .modal-task.in-progress {
   background: #fff5e1;
   border-color: var(--warning);
@@ -353,7 +359,6 @@ body {
   border-color: var(--warning);
 }
 
-/* Статус: Выполнено */
 .modal-task.done {
   background: #eafaf1;
   border-color: #b8e6c8;
@@ -398,22 +403,6 @@ body {
 
 .empty-state { text-align: center; padding: 40px; color: var(--gray); }
 
-@media (max-width: 900px) {
-  .app { grid-template-columns: 1fr; }
-  .sidebar { position: relative; height: auto; }
-  .main { padding: 20px; }
-  .day { min-height: 70px; padding: 6px; }
-  .task-chip { font-size: 9px; }
-}
-
-@media (max-width: 640px) {
-  .modal-overlay { padding: 0; }
-  .modal {
-    max-width: 100%; max-height: 100vh;
-    border-radius: 0; height: 100vh;
-  }
-  .modal-header { border-radius: 0; }
-}
 /* ===== Кнопки действий в задаче ===== */
 .modal-task-actions {
   display: flex;
@@ -438,75 +427,50 @@ body {
   transition: all 0.2s;
   padding: 0;
 }
-
 .task-action-btn:hover {
   background: var(--blue);
   color: var(--white);
   border-color: var(--blue);
   transform: scale(1.05);
 }
-
 .task-action-btn.danger:hover {
   background: var(--danger);
   border-color: var(--danger);
 }
 
 /* ===== Форма редактирования ===== */
-.edit-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.edit-form-row {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
+.edit-form { display: flex; flex-direction: column; gap: 16px; }
+.edit-form-row { display: flex; flex-direction: column; gap: 6px; }
 .edit-form-row label {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
   color: var(--gray);
 }
-
 .edit-form-row input,
 .edit-form-row select,
 .edit-form-row textarea {
   padding: 10px 12px;
   border: 1px solid var(--gray-light);
   border-radius: 10px;
-  font-family: inherit;
-  font-size: 13px;
-  color: var(--navy);
-  background: var(--white);
+  font-family: inherit; font-size: 13px;
+  color: var(--navy); background: var(--white);
   transition: all 0.2s;
 }
-
 .edit-form-row input:focus,
 .edit-form-row select:focus,
 .edit-form-row textarea:focus {
-  outline: none;
-  border-color: var(--blue);
+  outline: none; border-color: var(--blue);
   box-shadow: 0 0 0 3px rgba(42, 127, 255, 0.1);
 }
 
-.edit-form-row input:disabled,
-.edit-form-row select:disabled,
-.edit-form-row textarea:disabled {
-  background: var(--bg);
-  color: var(--gray);
-  cursor: not-allowed;
-}
-
-/* ===== Кнопка "Добавить задачу" в модалке дня ===== */
-.add-task-row {
+/* ===== Кнопка "Добавить задачу" ===== */
+.section-head-row {
   display: flex;
-  justify-content: flex-end;
-  margin-top: 8px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
 }
+.section-head-row h4 { margin: 0; }
 
 .add-task-btn-inline {
   background: linear-gradient(135deg, var(--blue), var(--sky));
@@ -519,26 +483,19 @@ body {
   cursor: pointer;
   transition: all 0.2s;
 }
-
 .add-task-btn-inline:hover {
   opacity: 0.9;
   transform: translateY(-1px);
 }
+
 /* ===== Планшеты ===== */
 @media (max-width: 1024px) {
   .app { grid-template-columns: 1fr; }
-  .sidebar {
-    position: relative;
-    height: auto;
-    padding: 16px;
-  }
+  .sidebar { position: relative; height: auto; padding: 16px; }
   .main { padding: 20px; }
-
   .progress-block { padding: 12px; }
   .role-filter {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 8px;
+    flex-direction: row; flex-wrap: wrap; gap: 8px;
   }
   .role-item {
     padding: 6px 10px;
@@ -552,56 +509,38 @@ body {
 @media (max-width: 640px) {
   body { font-size: 14px; }
 
-  /* Сайдбар */
-  .sidebar {
-    padding: 14px;
-    border-radius: 0 0 16px 16px;
-  }
+  .sidebar { padding: 14px; border-radius: 0 0 16px 16px; }
   .logo { margin-bottom: 16px; gap: 10px; }
   .logo-icon { width: 36px; height: 36px; border-radius: 10px; }
   .logo-text h1 { font-size: 14px; }
   .logo-text p { font-size: 10px; }
 
-  .section-title {
-    margin: 16px 0 8px;
-    font-size: 10px;
-  }
+  .section-title { margin: 16px 0 8px; font-size: 10px; }
 
-  /* Прогресс — компактно */
   .progress-block { padding: 10px 12px; margin-bottom: 8px; }
   .progress-block h3 { font-size: 12px; margin-bottom: 6px; }
   .progress-bar { height: 6px; }
   .progress-meta { font-size: 10px; }
 
-  /* Роли — горизонтально, скролл */
   .role-filter {
-    flex-direction: row;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: 6px;
+    flex-direction: row; flex-wrap: nowrap;
+    overflow-x: auto; gap: 6px;
     padding-bottom: 4px;
     -webkit-overflow-scrolling: touch;
   }
   .role-filter::-webkit-scrollbar { display: none; }
   .role-item {
-    flex-shrink: 0;
-    padding: 6px 10px;
-    background: var(--navy-2);
-    border-radius: 8px;
-    font-size: 11px;
-    white-space: nowrap;
+    flex-shrink: 0; padding: 6px 10px;
+    background: var(--navy-2); border-radius: 8px;
+    font-size: 11px; white-space: nowrap;
   }
 
-  /* Кнопки */
   .btn { padding: 10px; font-size: 12px; }
 
-  /* Основная часть */
   .main { padding: 12px; }
   .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 16px;
-    gap: 12px;
+    flex-direction: column; align-items: flex-start;
+    margin-bottom: 16px; gap: 12px;
   }
   .header-with-icon { gap: 10px; }
   .header-icon { width: 40px; height: 40px; border-radius: 10px; }
@@ -612,44 +551,37 @@ body {
   .legend-item { font-size: 10px; }
   .legend-dot { width: 10px; height: 10px; }
 
-  /* Календарь */
   .calendar { padding: 10px; border-radius: 12px; }
   .weekdays { gap: 4px; margin-bottom: 6px; }
   .weekday { font-size: 9px; padding: 4px 0; letter-spacing: 0; }
   .days-grid { gap: 4px; }
 
   .day {
-    min-height: 56px;
-    padding: 4px;
-    border-radius: 8px;
+    min-height: 56px; padding: 4px; border-radius: 8px;
   }
   .day:hover { transform: none; }
   .day-number { font-size: 11px; margin-bottom: 2px; }
-  .day.checkpoint::before { font-size: 10px; top: 3px; right: 5px; }
+
+  .day.checkpoint::before {
+    font-size: 12px;
+    top: 3px;
+    right: 4px;
+  }
 
   .day-tasks { gap: 1px; }
   .task-chip {
-    font-size: 8px;
-    padding: 1px 4px;
-    border-radius: 4px;
-    border-left-width: 2px;
-    gap: 2px;
+    font-size: 8px; padding: 1px 4px;
+    border-radius: 4px; border-left-width: 2px; gap: 2px;
   }
   .task-chip .dot { width: 4px; height: 4px; }
   .day-more { font-size: 8px; }
 
-  /* Модалки — на весь экран */
   .modal-overlay { padding: 0; }
   .modal {
-    max-width: 100%;
-    max-height: 100vh;
-    height: 100vh;
-    border-radius: 0;
+    max-width: 100%; max-height: 100vh;
+    height: 100vh; border-radius: 0;
   }
-  .modal-header {
-    padding: 16px 18px;
-    border-radius: 0;
-  }
+  .modal-header { padding: 16px 18px; border-radius: 0; }
   .modal-header h3 { font-size: 16px; }
   .modal-subtitle { font-size: 11px; }
   .modal-close { font-size: 22px; padding: 4px 8px; }
@@ -659,16 +591,8 @@ body {
   .modal-section h4 { font-size: 10px; letter-spacing: 1px; }
   .badge { min-width: 18px; height: 18px; font-size: 10px; }
 
-  /* Задачи в модалке */
-  .modal-task {
-    padding: 10px 12px;
-    gap: 8px;
-    border-radius: 10px;
-  }
-  .modal-task input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-  }
+  .modal-task { padding: 10px 12px; gap: 8px; border-radius: 10px; }
+  .modal-task input[type="checkbox"] { width: 18px; height: 18px; }
   .modal-task-role { font-size: 10px; }
   .modal-task-text { font-size: 12px; }
   .modal-task-status { font-size: 9px; padding: 2px 6px; margin-top: 4px; }
@@ -676,48 +600,30 @@ body {
   .modal-task-actions { gap: 3px; }
   .task-action-btn { width: 26px; height: 26px; font-size: 12px; }
 
-  /* Заметки */
-  .notes-area {
-    padding: 10px;
-    font-size: 12px;
-    min-height: 80px;
-  }
+  .notes-area { padding: 10px; font-size: 12px; min-height: 80px; }
 
-  /* Футер модалки */
   .modal-footer {
-    padding: 12px 18px;
-    gap: 8px;
-    position: sticky;
-    bottom: 0;
+    padding: 12px 18px; gap: 8px;
+    position: sticky; bottom: 0;
   }
   .modal-footer .btn {
-    padding: 10px 14px;
-    font-size: 12px;
-    flex: 1;
+    padding: 10px 14px; font-size: 12px; flex: 1;
   }
 
-  /* Кнопка добавления задачи */
   .section-head-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
+    flex-direction: column; align-items: stretch; gap: 8px;
   }
   .add-task-btn-inline {
-    font-size: 11px;
-    padding: 8px 12px;
-    width: 100%;
+    font-size: 11px; padding: 8px 12px; width: 100%;
   }
 
-  /* Форма редактирования */
   .edit-form-row label { font-size: 10px; }
   .edit-form-row input,
   .edit-form-row select,
   .edit-form-row textarea {
-    font-size: 13px;
-    padding: 10px;
+    font-size: 13px; padding: 10px;
   }
 
-  /* Кнопки в сайдбаре — компактнее */
   .sync-status { font-size: 10px; margin-top: 8px; }
 }
 
