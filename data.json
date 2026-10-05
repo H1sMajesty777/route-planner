@@ -1073,18 +1073,21 @@
     "2026-10-05_qa_Выбрать методы тестирования": "in-progress",
     "2026-10-05_back_Собрать Docker-образ бэкенда": "in-progress",
     "2026-10-05_front_Начать макет в Figma": "in-progress",
-    "2026-11-02_back_Ревью бэкенда": "pending"
+    "2026-11-02_back_Ревью бэкенда": "pending",
+    "2026-10-06_tl_Согласовать ТЗ с командой": "pending",
+    "2026-10-06_qa_Тест-план верхнего уровня": "in-progress"
   },
   "notes": {
     "2026-10-31": "",
-    "2026-11-02": ""
+    "2026-11-02": "",
+    "2026-10-06": ""
   },
   "rolesFilter": {
-    "tl": true,
-    "arch": true,
-    "back": true,
-    "front": true,
+    "tl": false,
+    "arch": false,
+    "back": false,
+    "front": false,
     "qa": true
   },
-  "updatedAt": "2026-10-05T11:11:31.761Z"
+  "updatedAt": "2026-10-05T11:20:25.690Z"
 }
