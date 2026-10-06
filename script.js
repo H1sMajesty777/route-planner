@@ -167,7 +167,9 @@ async function loadFromGitHub(showToast = false) {
         fileSha = data.sha;
         const decoded = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
         const remote = JSON.parse(decoded);
-        state = { ...JSON.parse(JSON.stringify(FALLBACK_DATA)), ...remote };
+        const incoming = { ...JSON.parse(JSON.stringify(FALLBACK_DATA)), ...remote };
+        delete incoming.rolesFilter;
+        state = { ...state, ...incoming };
       }
     } else {
       isReadOnly = true;
@@ -180,7 +182,9 @@ async function loadFromGitHub(showToast = false) {
         throw new Error(`HTTP ${res.status}`);
       } else {
         const remote = await res.json();
-        state = { ...JSON.parse(JSON.stringify(FALLBACK_DATA)), ...remote };
+        const incoming = { ...JSON.parse(JSON.stringify(FALLBACK_DATA)), ...remote };
+        delete incoming.rolesFilter;
+        state = { ...state, ...incoming };
       }
       fileSha = null;
     }
@@ -217,7 +221,12 @@ async function saveToGitHub() {
 
   try {
     state.updatedAt = new Date().toISOString();
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(state, null, 2))));
+
+    // rolesFilter не отправляем в data.json — он локальный
+    const stateToSave = { ...state };
+    delete stateToSave.rolesFilter;
+
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(stateToSave, null, 2))));
     const branch = config.branch || DEFAULT_REPO.branch;
 
     const body = {
@@ -268,7 +277,6 @@ async function saveToGitHub() {
 
 function updateReadOnlyUI() {
   const saveBtn = document.getElementById('save-btn');
-  const settingsBtn = document.getElementById('settings-btn');
   const addBtn = document.getElementById('add-task-btn');
   const datesBtn = document.getElementById('dates-btn');
 
@@ -277,7 +285,6 @@ function updateReadOnlyUI() {
       saveBtn.disabled = true;
       saveBtn.textContent = '🔒 Только просмотр';
     }
-    if (settingsBtn) settingsBtn.style.display = 'none';
     if (addBtn) addBtn.style.display = 'none';
     if (datesBtn) datesBtn.style.display = 'none';
   } else {
@@ -285,7 +292,6 @@ function updateReadOnlyUI() {
       saveBtn.disabled = false;
       saveBtn.textContent = '💾 Сохранить на GitHub';
     }
-    if (settingsBtn) settingsBtn.style.display = '';
     if (addBtn) addBtn.style.display = '';
     if (datesBtn) datesBtn.style.display = '';
   }
@@ -325,7 +331,9 @@ function startPolling() {
 
       if (remote.updatedAt && remote.updatedAt !== lastKnownUpdatedAt) {
         fileSha = newSha;
-        state = { ...JSON.parse(JSON.stringify(FALLBACK_DATA)), ...remote };
+        const incoming = { ...JSON.parse(JSON.stringify(FALLBACK_DATA)), ...remote };
+        delete incoming.rolesFilter;
+        state = { ...state, ...incoming };
         lastKnownUpdatedAt = remote.updatedAt;
         applyProjectMeta();
         renderCalendar();
@@ -611,7 +619,6 @@ function renderDatesModal() {
   const saturdays = getSaturdays();
   const checkpoints = getCheckpoints();
 
-  // Субботы
   const satContainer = document.getElementById('saturdays-list');
   if (saturdays.length === 0) {
     satContainer.innerHTML = '<div class="dates-empty">Нет суббот</div>';
@@ -624,7 +631,6 @@ function renderDatesModal() {
     `).join('');
   }
 
-  // КТ
   const cpContainer = document.getElementById('checkpoints-list');
   if (checkpoints.length === 0) {
     cpContainer.innerHTML = '<div class="dates-empty">Нет контрольных точек</div>';
@@ -740,6 +746,16 @@ function updateProgress() {
 document.addEventListener('DOMContentLoaded', () => {
   const roleFilter = document.getElementById('role-filter');
   if (roleFilter) {
+    // Синхронизируем чекбоксы с состоянием (по умолчанию всё включено)
+    roleFilter.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      const role = cb.dataset.role;
+      if (state.rolesFilter && state.rolesFilter[role] === false) {
+        cb.checked = false;
+      } else {
+        cb.checked = true;
+      }
+    });
+
     roleFilter.addEventListener('change', (e) => {
       if (e.target.type === 'checkbox') {
         if (!state.rolesFilter) state.rolesFilter = {};
